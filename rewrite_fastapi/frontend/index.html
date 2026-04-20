@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VidVoice Studio — FastAPI Rewrite</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="page-shell navbar-inner">
+        <a class="brand" href="/">
+          <div class="brand-mark">✦</div>
+          <div>
+            <div class="brand-title">VidVoice</div>
+            <div class="brand-subtitle">Studio</div>
+          </div>
+        </a>
+        <nav class="nav-links">
+          <a href="#hero">Home</a>
+          <a href="#audio-editor">Audio</a>
+          <a href="#images">Images</a>
+          <a href="#video">Video</a>
+          <a href="/projects">Projects</a>
+          <a href="/profile">Profile</a>
+          <a href="/credits">Credits</a>
+          <a href="/settings">Settings</a>
+        </nav>
+      </div>
+    </header>
+
+    <section id="hero" class="hero-section">
+      <div class="ring-glow" style="top:22%;left:50%;transform:translate(-50%,-50%);width:700px;height:500px;"></div>
+      <div class="page-shell" style="padding-top:4rem;padding-bottom:4rem;">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-badge">
+              <span class="eyebrow">BETA</span>
+              <div style="width:1px;height:12px;background:color-mix(in srgb, var(--primary) 30%, transparent);"></div>
+              <span class="muted" style="color:color-mix(in srgb, var(--primary) 80%, white);">Text • Voice • Video</span>
+            </div>
+            <h1 class="hero-title">Turn text into<br><span style="color:var(--primary)">voice</span> and <span style="color:var(--accent)">video</span></h1>
+            <p class="hero-copy">Write or paste your text, translate it, generate a professional voiceover with ElevenLabs, add your images, and export a finished video — all in one place.</p>
+            <div class="hero-actions">
+              <a class="button" href="#audio-editor">Start generating</a>
+              <a class="outline-button" href="#workflow">Try demo</a>
+            </div>
+            <div class="stats-row">
+              <div><div class="eyebrow">50+</div><div class="muted">AI Voices</div></div>
+              <div class="stats-divider"></div>
+              <div><div class="eyebrow">UA↔EN</div><div class="muted">Translation</div></div>
+              <div class="stats-divider"></div>
+              <div><div class="eyebrow">MP4</div><div class="muted">Video Export</div></div>
+            </div>
+          </div>
+          <div class="card" style="position:relative;">
+            <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;">
+              <div style="width:10px;height:10px;background:color-mix(in srgb, var(--destructive) 60%, transparent);"></div>
+              <div style="width:10px;height:10px;background:rgba(245,158,11,0.6);"></div>
+              <div style="width:10px;height:10px;background:color-mix(in srgb, var(--primary) 50%, transparent);"></div>
+              <div class="eyebrow" style="margin-left:auto;color:var(--muted-foreground)">VidVoice Studio</div>
+            </div>
+            <div class="content-card" style="margin-bottom:1rem;background:color-mix(in srgb, var(--secondary) 60%, transparent);">
+              <p class="card-copy">"Ласкаво просимо до VidVoice — перетворіть ваш текст на голос та відео за секунди..."</p>
+              <div class="button-row" style="margin-top:1rem;">
+                <div class="ghost-button"><span class="eyebrow">UA→EN</span></div>
+                <div class="ghost-button"><span class="eyebrow">EN→UA</span></div>
+              </div>
+            </div>
+            <div class="button-row" style="margin-bottom:1rem;">
+              <div class="mini-card" style="padding:1rem;flex:1;">
+                <div class="eyebrow" style="color:var(--muted-foreground)">VOICE</div>
+                <div>Rachel</div>
+              </div>
+              <div class="mini-card" style="padding:1rem;flex:1;">
+                <div class="eyebrow" style="color:var(--muted-foreground)">LANG</div>
+                <div>English</div>
+              </div>
+            </div>
+            <div class="content-card" style="background:color-mix(in srgb, var(--secondary) 45%, transparent);">
+              <div class="inline-row">
+                <div class="button" style="width:2.5rem;height:2.5rem;padding:0;">▶</div>
+                <div class="player-wave">
+                  <span class="active" style="height:70%"></span><span class="active" style="height:60%"></span><span class="active" style="height:78%"></span><span style="height:50%"></span><span style="height:66%"></span><span style="height:72%"></span><span style="height:58%"></span><span style="height:69%"></span><span style="height:54%"></span><span style="height:62%"></span><span style="height:55%"></span><span style="height:80%"></span>
+                </div>
+                <span class="muted">0:32</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="section-line"></div>
+      <div class="page-shell">
+        <div class="section-head">
+          <div class="eyebrow">What you can do</div>
+          <h2 class="section-title">Everything in one workflow</h2>
+          <p class="section-copy">From raw text to a finished video — translate, voice, and compose without leaving the page.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-card"><div class="feature-index">01</div><div class="icon-box">✎</div><h3 class="heading">Write text</h3><p class="card-copy">Enter or paste any text. Works with both Ukrainian and English content.</p></div>
+          <div class="feature-card"><div class="feature-index">02</div><div class="icon-box">文</div><h3 class="heading">Translate UA ↔ EN</h3><p class="card-copy">Instantly translate between Ukrainian and English with one click.</p></div>
+          <div class="feature-card"><div class="feature-index">03</div><div class="icon-box">🎙</div><h3 class="heading">Generate voice</h3><p class="card-copy">Create studio-quality voiceovers powered by ElevenLabs text-to-speech.</p></div>
+          <div class="feature-card"><div class="feature-index">04</div><div class="icon-box">🖼</div><h3 class="heading">Upload images</h3><p class="card-copy">Drag and drop your images. Reorder them to match your story.</p></div>
+          <div class="feature-card"><div class="feature-index">05</div><div class="icon-box">🎬</div><h3 class="heading">Compose video</h3><p class="card-copy">Combine your audio and images into a clean, export-ready video.</p></div>
+          <div class="feature-card"><div class="feature-index">06</div><div class="icon-box">⬇</div><h3 class="heading">Download result</h3><p class="card-copy">Export your audio and video files in standard formats, ready to share.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="audio-editor" class="section">
+      <div class="section-line"></div>
+      <div class="page-shell" style="max-width:64rem;">
+        <div class="section-head" style="text-align:left;max-width:none;margin:0 0 2.5rem;">
+          <div class="eyebrow">Step 1 – 2</div>
+          <h2 class="section-title" style="font-size:2.4rem;">Write & Translate</h2>
+          <p class="section-copy">Enter your text, optionally translate it, then choose a voice and generate.</p>
+        </div>
+        <div class="content-card editor-grid">
+          <div>
+            <div class="inline-row" style="justify-content:space-between;margin-bottom:0.5rem;">
+              <div class="eyebrow">Your text</div>
+              <div class="text-count">Live editor</div>
+            </div>
+            <textarea id="script-text" class="textarea" placeholder="Enter your text here — in Ukrainian or English..."></textarea>
+          </div>
+          <div>
+            <div class="eyebrow" style="margin-bottom:0.5rem;">Translate</div>
+            <div class="button-row">
+              <button id="translate-en" class="outline-button" type="button">Translate to English</button>
+              <button id="translate-ua" class="outline-button" type="button">Translate to Ukrainian</button>
+            </div>
+          </div>
+          <div>
+            <div class="eyebrow" style="margin-bottom:0.5rem;">Voice (ElevenLabs)</div>
+            <div class="dropdown">
+              <button id="voice-toggle" class="outline-button" type="button" style="width:100%;justify-content:space-between;">
+                <span><strong id="voice-label">Rachel</strong><br><span class="muted" id="voice-style">Calm & Clear</span></span>
+                <span>⌄</span>
+              </button>
+              <div id="voice-options" class="dropdown-menu hidden"></div>
+            </div>
+          </div>
+          <button id="generate-audio" class="button" type="button" style="width:100%;">Generate Voice</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="audio-player" class="section hidden">
+      <div class="section-line"></div>
+      <div class="page-shell" style="max-width:64rem;">
+        <div class="eyebrow" style="margin-bottom:0.75rem;">Step 3 – Audio result</div>
+        <h2 class="section-title" style="font-size:2rem;text-align:left;">Generated Audio</h2>
+        <div id="audio-preview"></div>
+      </div>
+    </section>
+
+    <section id="images" class="section">
+      <div class="section-line"></div>
+      <div class="page-shell" style="max-width:64rem;">
+        <div class="section-head" style="text-align:left;max-width:none;margin:0 0 2rem;">
+          <div class="eyebrow">Step 4 – Images</div>
+          <h2 class="section-title" style="font-size:2.4rem;">Upload Images</h2>
+          <p class="section-copy">Upload images that will be combined with your audio into a video. Reorder as needed.</p>
+        </div>
+        <label class="upload-zone">
+          <input id="image-input" type="file" multiple accept="image/*" class="hidden" />
+          <div class="icon-box" style="width:3.5rem;height:3.5rem;margin:0 auto 1rem;">🖼</div>
+          <div><strong>Drop images here or click to browse</strong></div>
+          <div class="muted">PNG, JPG, WEBP — multiple files supported</div>
+        </label>
+        <div id="image-grid" class="image-grid"></div>
+      </div>
+    </section>
+
+    <section id="video" class="section">
+      <div class="section-line"></div>
+      <div class="page-shell" style="max-width:64rem;">
+        <div class="section-head" style="text-align:left;max-width:none;margin:0 0 2rem;">
+          <div class="eyebrow">Step 5 – Video</div>
+          <h2 class="section-title" style="font-size:2.4rem;">Compose Video</h2>
+          <p class="section-copy">Your images and generated audio will be combined into a single MP4 file.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card" style="background:color-mix(in srgb, var(--secondary) 70%, transparent);margin-bottom:1.5rem;">
+            <strong>How it works:</strong>
+            <span class="card-copy"> A script combines your audio and images into a video — each image is displayed for an equal time slice. This is a simple composition, not AI generation.</span>
+          </div>
+          <div class="button-row" style="margin-bottom:1rem;">
+            <div class="muted">Requirements:</div>
+            <div class="muted">Audio generated</div>
+            <div class="muted">Images uploaded</div>
+          </div>
+          <div class="button-row">
+            <button id="compose-video" class="button" type="button">Create Video</button>
+          </div>
+          <div id="video-result" class="hidden" style="margin-top:1.5rem;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow" class="section">
+      <div class="section-line"></div>
+      <div class="page-shell">
+        <div class="section-head">
+          <div class="eyebrow">How it works</div>
+          <h2 class="section-title">Six steps to finished content</h2>
+          <p class="section-copy">A clear, linear workflow from first word to final video file.</p>
+        </div>
+        <div class="workflow-grid">
+          <div class="workflow-card"><div class="icon-box">01</div><h3 class="heading">Write text</h3><p class="card-copy">Enter your script in Ukrainian or English</p></div>
+          <div class="workflow-card"><div class="icon-box">02</div><h3 class="heading">Translate</h3><p class="card-copy">Optional — switch language with one click</p></div>
+          <div class="workflow-card"><div class="icon-box">03</div><h3 class="heading">Generate voice</h3><p class="card-copy">ElevenLabs converts your text to audio</p></div>
+          <div class="workflow-card"><div class="icon-box">04</div><h3 class="heading">Upload images</h3><p class="card-copy">Add and order the images for your video</p></div>
+          <div class="workflow-card"><div class="icon-box">05</div><h3 class="heading">Create video</h3><p class="card-copy">Script composes audio + images into MP4</p></div>
+          <div class="workflow-card"><div class="icon-box">06</div><h3 class="heading">Download</h3><p class="card-copy">Export audio and video to your device</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-line"></div>
+      <div class="page-shell">
+        <div class="card" style="position:relative;overflow:hidden;text-align:center;padding:4rem 2rem;">
+          <div style="position:absolute;inset:0;opacity:0.03;background-image:linear-gradient(var(--primary) 1px, transparent 1px), linear-gradient(90deg, var(--primary) 1px, transparent 1px);background-size:24px 24px;"></div>
+          <div class="ring-glow" style="top:0;left:50%;transform:translateX(-50%);width:400px;height:180px;"></div>
+          <div class="eyebrow" style="position:relative;">Ready to start?</div>
+          <h2 class="section-title" style="position:relative;">Create your first video today</h2>
+          <p class="section-copy" style="position:relative;max-width:36rem;margin:0 auto 2rem;">Write, translate, voice, compose — everything you need in one page.</p>
+          <a class="button" href="#audio-editor" style="position:relative;">Start now</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="page-shell">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="brand" href="#hero">
+              <div class="brand-mark"><span class="brand-subtitle">VV</span></div>
+              <div class="brand-title">Vid<span style="color:var(--primary)">Voice</span></div>
+            </a>
+            <p class="card-copy" style="max-width:20rem;margin-top:1rem;">Text to voice to video. Translate, generate, compose — all in one page. Powered by ElevenLabs.</p>
+            <div class="ghost-button" style="display:inline-flex;margin-top:1rem;"><span style="width:6px;height:6px;border-radius:999px;background:#4ade80;"></span><span class="brand-subtitle" style="color:var(--muted-foreground)">ELEVENLABS POWERED</span></div>
+          </div>
+          <div>
+            <div class="brand-subtitle">Product</div>
+            <div class="editor-grid" style="margin-top:1rem;">
+              <a class="muted" href="#audio-editor">Audio</a>
+              <a class="muted" href="#video">Video</a>
+              <a class="muted" href="#features">Features</a>
+              <a class="muted" href="#workflow">Workflow</a>
+            </div>
+          </div>
+          <div>
+            <div class="brand-subtitle">Project</div>
+            <div class="editor-grid" style="margin-top:1rem;">
+              <a class="muted" href="/projects">Projects</a>
+              <a class="muted" href="/profile">Profile</a>
+              <a class="muted" href="/credits">Credits</a>
+              <a class="muted" href="/settings">Settings</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-meta">
+          <div class="muted">© <span data-year></span> VidVoice. Diploma Project.</div>
+          <div class="brand-subtitle" style="color:color-mix(in srgb, var(--muted-foreground) 50%, transparent)">MADE WITH ELEVENLABS + FASTAPI</div>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/assets/js/home.js"></script>
+  </body>
+</html>
+

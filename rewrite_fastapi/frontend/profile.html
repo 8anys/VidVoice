@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VidVoice — Profile</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="simple-shell">
+      <a class="back-link" href="/">← Back</a>
+      <div class="page-card">
+        <div class="toolbar" style="align-items:flex-start;">
+          <div class="inline-row">
+            <div class="brand-mark" style="width:5rem;height:5rem;font-size:1.75rem;">LD</div>
+            <div>
+              <h1 id="profile-name" class="heading" style="margin:0 0 0.5rem;">User</h1>
+              <div id="profile-email" class="muted"></div>
+              <div class="muted">Member since <span id="member-since">—</span></div>
+            </div>
+          </div>
+          <button class="outline-button" type="button">Change Password</button>
+        </div>
+
+        <div class="content-card" style="margin-top:1.5rem;">
+          <div class="field-row">
+            <input id="name-input" class="input" placeholder="Name" />
+            <button id="save-profile" class="button" type="button">Save</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" style="margin-top:1.5rem;">
+          <div class="stat-card page-card"><div>4</div><div class="muted">Projects</div></div>
+          <div class="stat-card page-card"><div>12</div><div class="muted">Audio Generated</div></div>
+          <div class="stat-card page-card"><div>3</div><div class="muted">Videos Generated</div></div>
+          <div class="stat-card page-card"><div>24,500</div><div class="muted">Credits Used</div></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/assets/js/profile.js"></script>
+  </body>
+</html>
+
