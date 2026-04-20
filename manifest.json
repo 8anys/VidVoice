@@ -1,0 +1,16 @@
+{
+  "name": "VidVoice",
+  "short_name": "VidVoice",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0910",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "https://base44.com/logo_v2.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

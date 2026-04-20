@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Press+Start+2P&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 260 25% 5%;
+    --foreground: 0 0% 96%;
+    --card: 260 20% 9%;
+    --card-foreground: 0 0% 96%;
+    --popover: 260 20% 9%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 265 75% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 18% 13%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 260 15% 12%;
+    --muted-foreground: 260 5% 52%;
+    --accent: 270 60% 70%;
+    --accent-foreground: 260 25% 5%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 260 18% 16%;
+    --input: 260 18% 16%;
+    --ring: 265 75% 58%;
+    --chart-1: 265 75% 58%;
+    --chart-2: 270 60% 70%;
+    --chart-3: 260 20% 9%;
+    --chart-4: 0 0% 96%;
+    --chart-5: 260 18% 30%;
+    --radius: 0.625rem;
+    --sidebar-background: 260 25% 5%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 265 75% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 260 18% 13%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 260 18% 16%;
+    --sidebar-ring: 265 75% 58%;
+
+    --font-heading: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-pixel: 'Press Start 2P', monospace;
+  }
+
+  .dark {
+    --background: 260 25% 5%;
+    --foreground: 0 0% 96%;
+    --card: 260 20% 9%;
+    --card-foreground: 0 0% 96%;
+    --popover: 260 20% 9%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 265 75% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 18% 13%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 260 15% 12%;
+    --muted-foreground: 260 5% 52%;
+    --accent: 270 60% 70%;
+    --accent-foreground: 260 25% 5%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 260 18% 16%;
+    --input: 260 18% 16%;
+    --ring: 265 75% 58%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Pixel font utility */
+.font-pixel {
+  font-family: var(--font-pixel);
+}
