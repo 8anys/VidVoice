@@ -29,3 +29,8 @@ dist-ssr
 
 .env
 .vite
+.venv/
+rewrite_fastapi/.venv/
+__pycache__/
+*.pyc
+
