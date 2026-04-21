@@ -1,4 +1,4 @@
-import { api } from "./api.js";
+﻿import { api } from "./api.js";
 import { createWaveMarkup, setYear, toggleHidden } from "./common.js";
 
 const voices = [
@@ -15,7 +15,11 @@ const state = {
   selectedVoice: voices[0],
   generatedAudio: null,
   images: [],
+  profileOpen: false,
 };
+
+const languageMap = { en: "EN", uk: "UK", ru: "RU" };
+const themeMap = { dark: "Темна", light: "Світла", system: "Системна" };
 
 function renderVoiceOptions() {
   const container = document.getElementById("voice-options");
@@ -38,6 +42,64 @@ function syncSelectedVoice() {
   if (style) style.textContent = state.selectedVoice.style;
 }
 
+function getInitials(name = "", email = "") {
+  if (name.trim()) {
+    return name
+      .trim()
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  }
+  return (email[0] || "U").toUpperCase();
+}
+
+function initNavSectionHighlight() {
+  const links = Array.from(document.querySelectorAll(".nav-links a"));
+  const sections = links
+    .map((link) => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
+
+  links.forEach((link) => {
+    link.addEventListener("click", () => {
+      links.forEach((item) => item.classList.remove("is-active"));
+      link.classList.add("is-active");
+    });
+  });
+
+  if (!sections.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      const activeId = `#${visible.target.id}`;
+      links.forEach((link) => link.classList.toggle("is-active", link.getAttribute("href") === activeId));
+    },
+    { threshold: [0.35, 0.6], rootMargin: "-15% 0px -45% 0px" },
+  );
+
+  sections.forEach((section) => observer.observe(section));
+}
+
+async function renderProfileMenu() {
+  try {
+    const profile = await api.getProfile();
+    const initials = getInitials(profile.full_name || "", profile.email || "");
+    document.getElementById("profile-initials").textContent = initials;
+    document.getElementById("profile-dropdown-avatar").textContent = initials;
+    document.getElementById("profile-dropdown-name").textContent = profile.full_name || "User";
+    document.getElementById("profile-dropdown-email").textContent = profile.email || "";
+    document.getElementById("profile-language-badge").textContent = languageMap[profile.language] || "EN";
+    document.getElementById("profile-theme-badge").textContent = themeMap[profile.theme] || "Темна";
+  } catch (error) {
+    console.error("Failed to load profile menu", error);
+  }
+}
+
 function renderAudio() {
   const section = document.getElementById("audio-player");
   const preview = document.getElementById("audio-preview");
@@ -56,7 +118,7 @@ function renderAudio() {
       </div>
       <div style="width:0.5rem;height:0.5rem;border-radius:999px;background:#4ade80;"></div>
     </div>
-    <div class="content-card" style="background:color-mix(in srgb, var(--secondary) 70%, transparent); margin-bottom:1rem;">
+    <div class="content-card is-active" style="background:color-mix(in srgb, var(--secondary) 70%, transparent); margin-bottom:1rem;">
       <div class="inline-row">
         <button class="button" type="button" id="toggle-play">Play</button>
         <div class="player-wave">${createWaveMarkup()}</div>
@@ -82,10 +144,9 @@ function renderImages() {
   if (!grid) return;
   grid.innerHTML = state.images
     .map(
-      (image, index) => `
+      (image) => `
         <div class="image-item">
           <img src="${image.url}" alt="${image.name}">
-          <div class="floating-order">${index + 1}</div>
           <div class="image-controls">
             <button class="outline-button" type="button" data-move="${image.id}" data-dir="-1">←</button>
             <button class="outline-button" type="button" data-move="${image.id}" data-dir="1">→</button>
@@ -102,7 +163,7 @@ function renderVideoResult(result) {
   if (!target) return;
   toggleHidden(target, false);
   target.innerHTML = `
-    <div class="content-card">
+    <div class="content-card is-active">
       <div class="heading" style="font-size:1.25rem;margin-bottom:0.25rem;">${result.message}</div>
       <div class="muted">${result.slides} slides • ${result.format.toUpperCase()} export</div>
       <div class="button-row" style="margin-top:1rem;">
@@ -118,10 +179,26 @@ document.addEventListener("DOMContentLoaded", () => {
   syncSelectedVoice();
   renderAudio();
   renderImages();
+  renderProfileMenu();
+  initNavSectionHighlight();
 
   document.getElementById("voice-toggle")?.addEventListener("click", () => {
     state.voiceOpen = !state.voiceOpen;
     toggleHidden(document.getElementById("voice-options"), !state.voiceOpen);
+    document.getElementById("voice-toggle")?.classList.toggle("is-active", state.voiceOpen);
+  });
+
+  document.getElementById("profile-toggle")?.addEventListener("click", () => {
+    state.profileOpen = !state.profileOpen;
+    toggleHidden(document.getElementById("profile-dropdown"), !state.profileOpen);
+    document.getElementById("profile-toggle")?.classList.toggle("is-active", state.profileOpen);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest(".profile-menu")) return;
+    state.profileOpen = false;
+    toggleHidden(document.getElementById("profile-dropdown"), true);
+    document.getElementById("profile-toggle")?.classList.remove("is-active");
   });
 
   document.getElementById("voice-options")?.addEventListener("click", (event) => {
@@ -134,23 +211,27 @@ document.addEventListener("DOMContentLoaded", () => {
     syncSelectedVoice();
     renderVoiceOptions();
     toggleHidden(document.getElementById("voice-options"), true);
+    document.getElementById("voice-toggle")?.classList.remove("is-active");
   });
 
-  document.getElementById("translate-en")?.addEventListener("click", async () => {
+  document.getElementById("translate-en")?.addEventListener("click", async (event) => {
+    event.currentTarget.classList.add("is-active");
     const textarea = document.getElementById("script-text");
     const result = await api.translate({ text: textarea.value, direction: "toEN" });
     textarea.value = result.text;
   });
 
-  document.getElementById("translate-ua")?.addEventListener("click", async () => {
+  document.getElementById("translate-ua")?.addEventListener("click", async (event) => {
+    event.currentTarget.classList.add("is-active");
     const textarea = document.getElementById("script-text");
     const result = await api.translate({ text: textarea.value, direction: "toUA" });
     textarea.value = result.text;
   });
 
-  document.getElementById("generate-audio")?.addEventListener("click", async () => {
+  document.getElementById("generate-audio")?.addEventListener("click", async (event) => {
     const text = document.getElementById("script-text")?.value.trim();
     if (!text) return;
+    event.currentTarget.classList.add("is-active");
     state.generatedAudio = await api.generateAudio({
       text,
       voice: state.selectedVoice,
@@ -161,6 +242,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("image-input")?.addEventListener("change", async (event) => {
     const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+    document.querySelector(".upload-zone")?.classList.add("is-active");
+    const uploaded = await api.uploadImages(files);
+    state.images = [...state.images, ...uploaded];
+    renderImages();
+  });
+
+  document.querySelector(".upload-zone")?.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    event.currentTarget.classList.add("drag-over", "is-active");
+  });
+
+  document.querySelector(".upload-zone")?.addEventListener("dragleave", (event) => {
+    event.currentTarget.classList.remove("drag-over");
+  });
+
+  document.querySelector(".upload-zone")?.addEventListener("click", (event) => {
+    event.currentTarget.classList.add("is-active");
+  });
+
+  document.querySelector(".upload-zone")?.addEventListener("drop", async (event) => {
+    event.preventDefault();
+    event.currentTarget.classList.remove("drag-over");
+    event.currentTarget.classList.add("is-active");
+    const files = Array.from(event.dataTransfer?.files || []);
     if (!files.length) return;
     const uploaded = await api.uploadImages(files);
     state.images = [...state.images, ...uploaded];
@@ -188,8 +294,9 @@ document.addEventListener("DOMContentLoaded", () => {
     renderImages();
   });
 
-  document.getElementById("compose-video")?.addEventListener("click", async () => {
+  document.getElementById("compose-video")?.addEventListener("click", async (event) => {
     if (!state.generatedAudio || !state.images.length) return;
+    event.currentTarget.classList.add("is-active");
     const result = await api.composeVideo({
       images: state.images,
       format: "mp4",

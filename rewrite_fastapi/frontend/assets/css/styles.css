@@ -613,3 +613,317 @@ img {
   }
 }
 
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-start {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.nav-start:hover {
+  color: var(--foreground);
+}
+
+.profile-menu {
+  position: relative;
+}
+
+.avatar-button,
+.profile-dropdown-avatar,
+.profile-avatar-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.avatar-button {
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  border: 2px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  color: var(--primary);
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.avatar-button:hover {
+  border-color: color-mix(in srgb, var(--primary) 70%, transparent);
+  transform: translateY(-1px);
+}
+
+.avatar-status {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: #4ade80;
+  border: 2px solid var(--background);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  z-index: 100;
+  width: 17rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: color-mix(in srgb, var(--card) 96%, transparent);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+}
+
+.profile-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.profile-dropdown-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.dropdown-name {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.dropdown-email {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.profile-dropdown-group {
+  padding: 0.5rem;
+}
+
+.profile-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.75rem;
+  color: var(--muted-foreground);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.profile-dropdown-item:hover {
+  background: color-mix(in srgb, var(--secondary) 70%, transparent);
+  color: var(--foreground);
+}
+
+.upload-zone {
+  display: block;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.upload-zone:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  background: color-mix(in srgb, var(--card) 60%, transparent);
+}
+
+.upload-zone.drag-over {
+  border-color: color-mix(in srgb, var(--primary) 70%, transparent);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  transform: translateY(-1px);
+}
+
+.upload-icon-box {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.image-controls .outline-button,
+.image-controls .button {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.profile-avatar-large {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  border: 2px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  color: var(--primary);
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .nav-start {
+    display: none;
+  }
+}
+
+.nav-links a,
+.feature-card,
+.workflow-card,
+.upload-zone,
+.project-item,
+.page-card,
+.content-card,
+.mini-card {
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-links a {
+  position: relative;
+  padding: 0.35rem 0;
+}
+
+.nav-links a.is-active,
+.nav-links a:focus-visible {
+  color: var(--foreground);
+}
+
+.nav-links a.is-active::after,
+.nav-links a:focus-visible::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.9rem;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+
+.feature-card,
+.workflow-card {
+  cursor: pointer;
+}
+
+.feature-card.is-active,
+.feature-card:focus-visible,
+.workflow-card.is-active,
+.workflow-card:focus-visible,
+.upload-zone.is-active,
+.content-card.is-active,
+.mini-card.is-active,
+.page-card.is-active {
+  border-color: color-mix(in srgb, var(--primary) 65%, transparent);
+  background: color-mix(in srgb, var(--primary) 8%, var(--card));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 20%, transparent), 0 24px 50px rgba(0, 0, 0, 0.32);
+  transform: translateY(-1px);
+}
+
+.profile-dropdown {
+  width: 20rem;
+}
+
+.profile-dropdown-divider {
+  height: 1px;
+  margin: 0 1rem;
+  background: color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.profile-dropdown-item {
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.profile-dropdown-item.is-active,
+.profile-dropdown-item:hover {
+  background: color-mix(in srgb, var(--secondary) 82%, transparent);
+  color: var(--foreground);
+}
+
+.profile-dropdown-static {
+  cursor: default;
+}
+
+.profile-dropdown-static:hover {
+  background: transparent;
+}
+
+.profile-value {
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.logout-item {
+  color: #ef4444;
+}
+
+.logout-item:hover {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.avatar-button.is-active {
+  border-color: color-mix(in srgb, var(--primary) 75%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.upload-zone.drag-over,
+.upload-zone.is-active {
+  border-color: color-mix(in srgb, var(--primary) 70%, transparent);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  transform: translateY(-1px);
+}
+
+.feature-card:hover,
+.feature-card:focus-visible,
+.workflow-card:hover,
+.workflow-card:focus-visible {
+  border-color: color-mix(in srgb, var(--primary) 65%, transparent);
+  background: color-mix(in srgb, var(--primary) 8%, var(--card));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 20%, transparent), 0 24px 50px rgba(0, 0, 0, 0.32);
+  transform: translateY(-1px);
+}
+
+.feature-card.is-active,
+.workflow-card.is-active {
+  border-color: color-mix(in srgb, var(--border) 60%, transparent);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  box-shadow: var(--shadow);
+  transform: none;
+}
+
+.feature-card.is-active,
+.workflow-card.is-active {
+  border-color: color-mix(in srgb, var(--border) 60%, transparent);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  box-shadow: var(--shadow);
+  transform: none;
+}

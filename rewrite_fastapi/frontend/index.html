@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -21,11 +21,40 @@
           <a href="#audio-editor">Audio</a>
           <a href="#images">Images</a>
           <a href="#video">Video</a>
-          <a href="/projects">Projects</a>
-          <a href="/profile">Profile</a>
-          <a href="/credits">Credits</a>
-          <a href="/settings">Settings</a>
         </nav>
+        <div class="nav-actions">
+          <a href="#audio-editor" class="nav-start">Start</a>
+          <div class="profile-menu">
+            <button id="profile-toggle" type="button" class="avatar-button" aria-label="Open profile menu">
+              <span id="profile-initials">IV</span>
+              <span class="avatar-status"></span>
+            </button>
+            <div id="profile-dropdown" class="profile-dropdown hidden">
+              <div class="profile-dropdown-header">
+                <div class="profile-dropdown-avatar" id="profile-dropdown-avatar">IV</div>
+                <div>
+                  <div id="profile-dropdown-name" class="dropdown-name">Local Developer</div>
+                  <div id="profile-dropdown-email" class="dropdown-email">local@vidvoice.dev</div>
+                </div>
+              </div>
+              <div class="profile-dropdown-group">
+                <a href="/profile" class="profile-dropdown-item"><span>Профіль</span></a>
+                <a href="/projects" class="profile-dropdown-item"><span>Мої проєкти</span></a>
+                <a href="/credits" class="profile-dropdown-item"><span>Кредити / Використання</span></a>
+              </div>
+              <div class="profile-dropdown-divider"></div>
+              <div class="profile-dropdown-group">
+                <button type="button" class="profile-dropdown-item profile-dropdown-static"><span>Мова</span><span id="profile-language-badge" class="profile-value">EN</span></button>
+                <button type="button" class="profile-dropdown-item profile-dropdown-static"><span>Тема</span><span id="profile-theme-badge" class="profile-value">Темна</span></button>
+                <a href="/settings" class="profile-dropdown-item"><span>Налаштування</span></a>
+              </div>
+              <div class="profile-dropdown-divider"></div>
+              <div class="profile-dropdown-group">
+                <button type="button" class="profile-dropdown-item logout-item"><span>Вийти</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -167,7 +196,7 @@
         </div>
         <label class="upload-zone">
           <input id="image-input" type="file" multiple accept="image/*" class="hidden" />
-          <div class="icon-box" style="width:3.5rem;height:3.5rem;margin:0 auto 1rem;">🖼</div>
+          <div class="upload-icon-box">🖼</div>
           <div><strong>Drop images here or click to browse</strong></div>
           <div class="muted">PNG, JPG, WEBP — multiple files supported</div>
         </label>

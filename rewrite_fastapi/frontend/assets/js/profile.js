@@ -1,5 +1,18 @@
-import { api } from "./api.js";
+﻿import { api } from "./api.js";
 import { setYear } from "./common.js";
+
+function getInitials(name = "", email = "") {
+  if (name.trim()) {
+    return name
+      .trim()
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  }
+  return (email[0] || "U").toUpperCase();
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
   setYear();
@@ -9,11 +22,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("profile-email").textContent = profile.email || "";
   document.getElementById("member-since").textContent = profile.created_date ? new Date(profile.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—";
   document.getElementById("name-input").value = profile.full_name || "";
+  document.getElementById("profile-avatar-large").textContent = getInitials(profile.full_name || "", profile.email || "");
 
   document.getElementById("save-profile")?.addEventListener("click", async () => {
     const full_name = document.getElementById("name-input").value;
     const updated = await api.updateProfile({ full_name });
-    document.getElementById("profile-name").textContent = updated.full_name;
+    document.getElementById("profile-name").textContent = updated.full_name || "User";
+    document.getElementById("profile-avatar-large").textContent = getInitials(updated.full_name || "", updated.email || profile.email || "");
   });
 });
-
