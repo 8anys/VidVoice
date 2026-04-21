@@ -34,3 +34,4 @@ rewrite_fastapi/.venv/
 __pycache__/
 *.pyc
 
+rewrite_fastapi/backend/storage/uploads/
