@@ -1,5 +1,5 @@
 ﻿import { api } from "./api.js";
-import { setYear } from "./common.js";
+import { initI18n, setYear } from "./common.js?v=theme-2";
 
 function getInitials(name = "", email = "") {
   if (name.trim()) {
@@ -16,6 +16,7 @@ function getInitials(name = "", email = "") {
 
 document.addEventListener("DOMContentLoaded", async () => {
   setYear();
+  initI18n();
   const profile = await api.getProfile();
 
   document.getElementById("profile-name").textContent = profile.full_name || "User";

@@ -3,25 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VidVoice — Projects</title>
-    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <title>VidVoice - Projects</title>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=theme-2" />
   </head>
   <body>
     <div class="simple-shell">
-      <a class="back-link" href="/">← Back</a>
+      <a class="back-link" href="/" data-i18n="common.back">← Back</a>
       <div class="page-title">
-        <div class="eyebrow">Account</div>
-        <h1>My Projects</h1>
+        <div class="eyebrow" data-i18n="projects.account">Account</div>
+        <h1 data-i18n="projects.title">My Projects</h1>
       </div>
 
       <div class="toolbar">
-        <input id="project-search" class="input" placeholder="Search projects…" style="max-width:28rem;" />
-        <button id="new-project" class="button" type="button">+ New Project</button>
+        <input id="project-search" class="input" placeholder="Search projects…" style="max-width:28rem;" data-i18n-placeholder="projects.search" />
+        <button id="new-project" class="button" type="button" data-i18n="projects.new">+ New Project</button>
       </div>
 
       <div id="projects-list" class="project-list"></div>
     </div>
-    <script type="module" src="/assets/js/projects.js"></script>
+    <script type="module" src="/assets/js/projects.js?v=theme-2"></script>
   </body>
 </html>
-

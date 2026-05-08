@@ -3,32 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VidVoice — Settings</title>
-    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <title>VidVoice - Settings</title>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=theme-2" />
   </head>
   <body>
     <div class="simple-shell">
-      <a class="back-link" href="/">← Back</a>
+      <a class="back-link" href="/" data-i18n="common.back">← Back</a>
       <div class="page-title">
-        <div class="eyebrow">App</div>
-        <h1>Settings</h1>
+        <div class="eyebrow" data-i18n="settings.app">App</div>
+        <h1 data-i18n="settings.title">Settings</h1>
       </div>
 
       <div class="page-card">
         <div class="content-card" style="margin-bottom:1rem;">
-          <div class="heading" style="margin-bottom:1rem;">Default Language</div>
+          <div class="heading" style="margin-bottom:1rem;" data-i18n="settings.defaultLanguage">Default Language</div>
           <div class="field-row">
             <select id="language-select" class="select">
-              <option value="en">English</option>
-              <option value="uk">Українська</option>
-              <option value="ru">Русский</option>
+              <option value="en" data-i18n="settings.english">English</option>
+              <option value="uk" data-i18n="settings.ukrainian">Ukrainian</option>
             </select>
-            <label class="muted"><input id="auto-translate" type="checkbox" /> Auto-translate</label>
+            <label class="muted"><input id="auto-translate" type="checkbox" /> <span data-i18n="settings.autoTranslate">Auto-translate</span></label>
           </div>
         </div>
 
         <div class="content-card" style="margin-bottom:1rem;">
-          <div class="heading" style="margin-bottom:1rem;">Preferred Voice</div>
+          <div class="heading" style="margin-bottom:1rem;" data-i18n="settings.preferredVoice">Preferred Voice</div>
           <div class="field-row">
             <select id="voice-select" class="select">
               <option value="rachel">Rachel — Calm & Clear</option>
@@ -45,24 +44,23 @@
         </div>
 
         <div class="content-card">
-          <div class="heading" style="margin-bottom:1rem;">Video & Export</div>
+          <div class="heading" style="margin-bottom:1rem;" data-i18n="settings.videoExport">Video & Export</div>
           <div class="field-row">
             <select id="format-select" class="select">
               <option value="mp4">MP4 (H.264)</option>
               <option value="webm">WebM (VP9)</option>
               <option value="mov">MOV (ProRes)</option>
             </select>
-            <label class="muted"><input id="auto-save" type="checkbox" /> Auto-save</label>
+            <label class="muted"><input id="auto-save" type="checkbox" /> <span data-i18n="settings.autoSave">Auto-save</span></label>
           </div>
         </div>
 
         <div class="toolbar" style="margin-top:1.5rem;justify-content:flex-end;">
-          <button class="outline-button" type="button">Reset</button>
-          <button id="save-settings" class="button" type="button">Save</button>
+          <button class="outline-button" type="button" data-i18n="common.reset">Reset</button>
+          <button id="save-settings" class="button" type="button" data-i18n="common.save">Save</button>
         </div>
       </div>
     </div>
-    <script type="module" src="/assets/js/settings.js"></script>
+    <script type="module" src="/assets/js/settings.js?v=theme-2"></script>
   </body>
 </html>
-

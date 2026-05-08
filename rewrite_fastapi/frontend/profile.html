@@ -1,14 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VidVoice — Profile</title>
-    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <title>VidVoice - Profile</title>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=theme-2" />
   </head>
   <body>
     <div class="simple-shell">
-      <a class="back-link" href="/">← Back</a>
+      <a class="back-link" href="/" data-i18n="common.back">← Back</a>
       <div class="page-card">
         <div class="toolbar" style="align-items:flex-start;">
           <div class="inline-row">
@@ -16,27 +16,27 @@
             <div>
               <h1 id="profile-name" class="heading" style="margin:0 0 0.5rem;">User</h1>
               <div id="profile-email" class="muted"></div>
-              <div class="muted">Member since <span id="member-since">—</span></div>
+              <div class="muted"><span data-i18n="profile.memberSince">Member since</span> <span id="member-since">—</span></div>
             </div>
           </div>
-          <button class="outline-button" type="button">Change Password</button>
+          <button class="outline-button" type="button" data-i18n="profile.changePassword">Change Password</button>
         </div>
 
         <div class="content-card" style="margin-top:1.5rem;">
           <div class="field-row">
-            <input id="name-input" class="input" placeholder="Name" />
-            <button id="save-profile" class="button" type="button">Save</button>
+            <input id="name-input" class="input" placeholder="Name" data-i18n-placeholder="profile.name" />
+            <button id="save-profile" class="button" type="button" data-i18n="common.save">Save</button>
           </div>
         </div>
 
         <div class="stats-grid" style="margin-top:1.5rem;">
-          <div class="stat-card page-card"><div>4</div><div class="muted">Projects</div></div>
-          <div class="stat-card page-card"><div>12</div><div class="muted">Audio Generated</div></div>
-          <div class="stat-card page-card"><div>3</div><div class="muted">Videos Generated</div></div>
-          <div class="stat-card page-card"><div>24,500</div><div class="muted">Credits Used</div></div>
+          <div class="stat-card page-card"><div>4</div><div class="muted" data-i18n="profile.projects">Projects</div></div>
+          <div class="stat-card page-card"><div>12</div><div class="muted" data-i18n="profile.audioGenerated">Audio Generated</div></div>
+          <div class="stat-card page-card"><div>3</div><div class="muted" data-i18n="profile.videosGenerated">Videos Generated</div></div>
+          <div class="stat-card page-card"><div>24,500</div><div class="muted" data-i18n="profile.creditsUsed">Credits Used</div></div>
         </div>
       </div>
     </div>
-    <script type="module" src="/assets/js/profile.js"></script>
+    <script type="module" src="/assets/js/profile.js?v=theme-2"></script>
   </body>
 </html>

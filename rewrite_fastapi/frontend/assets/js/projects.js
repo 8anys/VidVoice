@@ -1,5 +1,5 @@
 import { api } from "./api.js";
-import { setYear } from "./common.js";
+import { formatTranslation, initI18n, setYear, t } from "./common.js?v=theme-2";
 
 function renderProjects(projects) {
   const list = document.getElementById("projects-list");
@@ -11,16 +11,16 @@ function renderProjects(projects) {
           <div>
             <div class="inline-row" style="margin-bottom:0.5rem;">
               <strong>${project.name}</strong>
-              <span class="pill ${project.status}">${project.status.replace("_", " ")}</span>
+              <span class="pill ${project.status}">${t(`status.${project.status}`, project.status.replace("_", " "))}</span>
             </div>
             <div class="project-meta">
               <span>${project.language}</span>
-              <span>${project.scenes} scenes</span>
-              <span>Created: ${project.created}</span>
-              <span>Updated: ${project.updated}</span>
+              <span>${formatTranslation("projects.scenes", { count: project.scenes })}</span>
+              <span>${formatTranslation("projects.created", { date: project.created })}</span>
+              <span>${formatTranslation("projects.updated", { date: project.updated })}</span>
             </div>
           </div>
-          <button class="outline-button" type="button">Open</button>
+          <button class="outline-button" type="button">${t("common.open")}</button>
         </div>
       `,
     )
@@ -29,7 +29,11 @@ function renderProjects(projects) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   setYear();
-  let projects = await api.getProjects();
+  let projects = [];
+  initI18n({
+    onChange: () => renderProjects(projects),
+  });
+  projects = await api.getProjects();
   renderProjects(projects);
 
   document.getElementById("project-search")?.addEventListener("input", (event) => {
@@ -39,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   document.getElementById("new-project")?.addEventListener("click", async () => {
-    await api.createProject({ name: "New Project", language: "EN", scenes: 4 });
+    await api.createProject({ name: t("projects.newName"), language: "EN", scenes: 4 });
     projects = await api.getProjects();
     renderProjects(projects);
   });

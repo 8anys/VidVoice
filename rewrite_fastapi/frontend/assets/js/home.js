@@ -1,5 +1,5 @@
 ﻿import { api } from "./api.js";
-import { createWaveMarkup, setYear, toggleHidden } from "./common.js";
+import { createWaveMarkup, formatTranslation, getCurrentLanguage, initI18n, setCurrentLanguage, setYear, t, toggleHidden } from "./common.js?v=theme-2";
 
 const voices = [
   { id: "rachel", label: "Rachel", style: "Calm & Clear" },
@@ -17,9 +17,6 @@ const state = {
   images: [],
   profileOpen: false,
 };
-
-const languageMap = { en: "EN", uk: "UK", ru: "RU" };
-const themeMap = { dark: "Темна", light: "Світла", system: "Системна" };
 
 function renderVoiceOptions() {
   const container = document.getElementById("voice-options");
@@ -93,8 +90,7 @@ async function renderProfileMenu() {
     document.getElementById("profile-dropdown-avatar").textContent = initials;
     document.getElementById("profile-dropdown-name").textContent = profile.full_name || "User";
     document.getElementById("profile-dropdown-email").textContent = profile.email || "";
-    document.getElementById("profile-language-badge").textContent = languageMap[profile.language] || "EN";
-    document.getElementById("profile-theme-badge").textContent = themeMap[profile.theme] || "Темна";
+    document.getElementById("profile-theme-badge").textContent = t("common.dark");
   } catch (error) {
     console.error("Failed to load profile menu", error);
   }
@@ -120,15 +116,15 @@ function renderAudio() {
     </div>
     <div class="content-card is-active" style="background:color-mix(in srgb, var(--secondary) 70%, transparent); margin-bottom:1rem;">
       <div class="inline-row">
-        <button class="button" type="button" id="toggle-play">Play</button>
+        <button class="button" type="button" id="toggle-play">${t("audio.play")}</button>
         <div class="player-wave">${createWaveMarkup()}</div>
         <span class="muted">${state.generatedAudio.duration}</span>
       </div>
       <div class="progress-bar" style="margin-top:0.75rem;"><div style="width:32%"></div></div>
     </div>
     <div class="button-row">
-      <button class="outline-button" type="button" id="regenerate-audio">Regenerate</button>
-      <button class="button" type="button">Download Audio</button>
+      <button class="outline-button" type="button" id="regenerate-audio">${t("audio.regenerate")}</button>
+      <button class="button" type="button">${t("audio.download")}</button>
     </div>
   `;
 
@@ -164,10 +160,10 @@ function renderVideoResult(result) {
   toggleHidden(target, false);
   target.innerHTML = `
     <div class="content-card is-active">
-      <div class="heading" style="font-size:1.25rem;margin-bottom:0.25rem;">${result.message}</div>
-      <div class="muted">${result.slides} slides • ${result.format.toUpperCase()} export</div>
+      <div class="heading" style="font-size:1.25rem;margin-bottom:0.25rem;">${t("video.ready")}</div>
+      <div class="muted">${formatTranslation("video.export", { slides: result.slides, format: result.format.toUpperCase() })}</div>
       <div class="button-row" style="margin-top:1rem;">
-        <button class="button" type="button">Download MP4</button>
+        <button class="button" type="button">${t("video.download")}</button>
       </div>
     </div>
   `;
@@ -175,6 +171,13 @@ function renderVideoResult(result) {
 
 document.addEventListener("DOMContentLoaded", () => {
   setYear();
+  initI18n({
+    onChange: () => {
+      renderAudio();
+      if (state.lastVideoResult) renderVideoResult(state.lastVideoResult);
+      renderProfileMenu();
+    },
+  });
   renderVoiceOptions();
   syncSelectedVoice();
   renderAudio();
@@ -192,6 +195,10 @@ document.addEventListener("DOMContentLoaded", () => {
     state.profileOpen = !state.profileOpen;
     toggleHidden(document.getElementById("profile-dropdown"), !state.profileOpen);
     document.getElementById("profile-toggle")?.classList.toggle("is-active", state.profileOpen);
+  });
+
+  document.getElementById("profile-language-toggle")?.addEventListener("click", () => {
+    setCurrentLanguage(getCurrentLanguage() === "uk" ? "en" : "uk");
   });
 
   document.addEventListener("click", (event) => {
@@ -301,6 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
       images: state.images,
       format: "mp4",
     });
+    state.lastVideoResult = result;
     renderVideoResult(result);
   });
 });

@@ -1,8 +1,9 @@
 import { api } from "./api.js";
-import { setYear } from "./common.js";
+import { initI18n, setYear } from "./common.js?v=theme-2";
 
 document.addEventListener("DOMContentLoaded", async () => {
   setYear();
+  initI18n();
   const credits = await api.getCredits();
   const pct = Math.round((credits.used / credits.total) * 100);
 

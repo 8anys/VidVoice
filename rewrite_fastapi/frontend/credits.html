@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VidVoice — Credits</title>
-    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <title>VidVoice - Credits</title>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=theme-2" />
   </head>
   <body>
     <div class="simple-shell">
-      <a class="back-link" href="/">← Back</a>
+      <a class="back-link" href="/" data-i18n="common.back">← Back</a>
       <div class="page-title">
         <div class="eyebrow">ElevenLabs</div>
-        <h1>Credits & Usage</h1>
+        <h1 data-i18n="credits.title">Credits & Usage</h1>
       </div>
 
       <div class="page-card" style="margin-bottom:1.5rem;">
@@ -19,28 +19,28 @@
           <div class="inline-row">
             <div class="icon-box" style="width:2.5rem;height:2.5rem;">⚡</div>
             <div>
-              <div class="heading">Character Credits</div>
-              <div class="muted">ElevenLabs Text-to-Speech</div>
+              <div class="heading" data-i18n="credits.characterCredits">Character Credits</div>
+              <div class="muted" data-i18n="credits.provider">ElevenLabs Text-to-Speech</div>
             </div>
           </div>
           <div style="text-align:right;">
             <div id="credits-pct" class="heading" style="font-size:1.8rem;">0%</div>
-            <div class="muted">Usage</div>
+            <div class="muted" data-i18n="credits.usage">Usage</div>
           </div>
         </div>
         <div class="progress-bar" style="height:0.75rem;margin-bottom:1rem;"><div id="credits-fill" style="width:0%"></div></div>
         <div class="stats-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));">
-          <div class="stat-card content-card"><div id="credits-used" class="heading">0</div><div class="muted">Characters Used</div></div>
-          <div class="stat-card content-card"><div id="credits-left" class="heading">0</div><div class="muted">Remaining</div></div>
-          <div class="stat-card content-card"><div id="credits-total" class="heading">0</div><div class="muted">Total Limit</div></div>
+          <div class="stat-card content-card"><div id="credits-used" class="heading">0</div><div class="muted" data-i18n="credits.used">Characters Used</div></div>
+          <div class="stat-card content-card"><div id="credits-left" class="heading">0</div><div class="muted" data-i18n="credits.remaining">Remaining</div></div>
+          <div class="stat-card content-card"><div id="credits-total" class="heading">0</div><div class="muted" data-i18n="credits.total">Total Limit</div></div>
         </div>
       </div>
 
       <div class="page-card">
-        <div class="heading" style="margin-bottom:1rem;">Usage History</div>
+        <div class="heading" style="margin-bottom:1rem;" data-i18n="credits.history">Usage History</div>
         <div id="credits-history" class="inline-row" style="align-items:flex-end;gap:1rem;min-height:14rem;"></div>
       </div>
     </div>
-    <script type="module" src="/assets/js/credits.js"></script>
+    <script type="module" src="/assets/js/credits.js?v=theme-2"></script>
   </body>
 </html>
