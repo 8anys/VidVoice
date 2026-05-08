@@ -214,6 +214,24 @@ img {
   min-height: 100vh;
   overflow: hidden;
   padding-top: 5rem;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--background) 58%, transparent) 0%, color-mix(in srgb, var(--background) 34%, transparent) 48%, color-mix(in srgb, var(--background) 62%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--background) 34%, transparent) 0%, color-mix(in srgb, var(--background) 86%, transparent) 100%),
+    url("/assets/images/fonts.gif") center / cover no-repeat;
+}
+
+.hero-section .ring-glow {
+  opacity: 0.55;
+}
+
+.hero-section .card {
+  background: color-mix(in srgb, var(--card) 58%, transparent);
+  backdrop-filter: blur(7px);
+}
+
+.hero-section .content-card,
+.hero-section .mini-card {
+  background: color-mix(in srgb, var(--secondary) 44%, transparent) !important;
 }
 
 .section {
