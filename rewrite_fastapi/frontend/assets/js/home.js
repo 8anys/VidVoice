@@ -1,5 +1,5 @@
 ﻿import { api } from "./api.js";
-import { createWaveMarkup, formatTranslation, getCurrentLanguage, initI18n, setCurrentLanguage, setYear, t, toggleHidden } from "./common.js?v=theme-2";
+import { createWaveMarkup, formatTranslation, getCurrentLanguage, initI18n, setCurrentLanguage, setYear, t, toggleHidden } from "./common.js?v=text-file-1";
 
 const voices = [
   { id: "rachel", label: "Rachel", style: "Calm & Clear" },
@@ -233,6 +233,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const textarea = document.getElementById("script-text");
     const result = await api.translate({ text: textarea.value, direction: "toUA" });
     textarea.value = result.text;
+  });
+
+  document.getElementById("text-file-input")?.addEventListener("change", async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const uploadButton = document.querySelector(".file-upload-button");
+    const textarea = document.getElementById("script-text");
+    if (!textarea) return;
+
+    uploadButton?.classList.add("is-active");
+    try {
+      textarea.value = await file.text();
+      textarea.focus();
+    } catch (error) {
+      console.error("Failed to read text file", error);
+    } finally {
+      event.target.value = "";
+      setTimeout(() => uploadButton?.classList.remove("is-active"), 700);
+    }
   });
 
   document.getElementById("generate-audio")?.addEventListener("click", async (event) => {

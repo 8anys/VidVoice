@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VidVoice Studio — FastAPI Rewrite</title>
-    <link rel="stylesheet" href="/assets/css/styles.css?v=hero-gif-3" />
+    <link rel="stylesheet" href="/assets/css/styles.css?v=text-file-1" />
   </head>
   <body>
     <header class="navbar">
@@ -152,7 +152,14 @@
           <div>
             <div class="inline-row" style="justify-content:space-between;margin-bottom:0.5rem;">
               <div class="eyebrow" data-i18n="audio.yourText">Your text</div>
-              <div class="text-count" data-i18n="audio.liveEditor">Live editor</div>
+              <div class="inline-row text-tools">
+                <label class="file-upload-button" for="text-file-input">
+                  <span aria-hidden="true">↑</span>
+                  <span data-i18n="audio.uploadText">File</span>
+                </label>
+                <input id="text-file-input" class="hidden" type="file" accept=".txt,.md,.srt,.vtt,text/plain,text/markdown" />
+                <div class="text-count" data-i18n="audio.liveEditor">Live editor</div>
+              </div>
             </div>
             <textarea id="script-text" class="textarea" placeholder="Enter your text here — in Ukrainian or English..." data-i18n-placeholder="audio.placeholder"></textarea>
           </div>
@@ -301,7 +308,7 @@
       </div>
     </footer>
 
-    <script type="module" src="/assets/js/home.js?v=theme-2"></script>
+    <script type="module" src="/assets/js/home.js?v=text-file-1"></script>
   </body>
 </html>
 
