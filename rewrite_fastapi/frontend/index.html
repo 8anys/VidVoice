@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VidVoice Studio — FastAPI Rewrite</title>
-    <link rel="stylesheet" href="/assets/css/styles.css?v=text-file-1" />
+    <link rel="stylesheet" href="/assets/css/styles.css?v=audio-upload-1" />
   </head>
   <body>
     <header class="navbar">
@@ -172,15 +172,62 @@
           </div>
           <div>
             <div class="eyebrow" style="margin-bottom:0.5rem;" data-i18n="audio.voice">Voice (ElevenLabs)</div>
-            <div class="dropdown">
-              <button id="voice-toggle" class="outline-button" type="button" style="width:100%;justify-content:space-between;">
-                <span><strong id="voice-label">Rachel</strong><br><span class="muted" id="voice-style">Calm & Clear</span></span>
-                <span>⌄</span>
-              </button>
-              <div id="voice-options" class="dropdown-menu hidden"></div>
+            <div id="voice-options" class="voice-grid" aria-live="polite"></div>
+            <div class="voice-meta-row">
+              <span class="muted" data-i18n="audio.selectedVoice">Selected voice</span>
+              <strong id="voice-label">Rachel</strong>
             </div>
           </div>
+          <div class="voice-settings-panel">
+            <div class="settings-head">
+              <div>
+                <div class="eyebrow" data-i18n="audio.voiceSettings">Voice settings</div>
+                <div class="muted" data-i18n="audio.voiceSettingsCopy">Fine tune the delivery before generation.</div>
+              </div>
+              <label class="model-select-wrap">
+                <span data-i18n="audio.model">Model</span>
+                <select id="voice-model" class="select compact-select">
+                  <option value="eleven_multilingual_v2">Multilingual v2</option>
+                  <option value="eleven_flash_v2_5">Flash v2.5</option>
+                  <option value="eleven_turbo_v2_5">Turbo v2.5</option>
+                </select>
+              </label>
+            </div>
+            <div class="slider-grid">
+              <label class="range-field">
+                <span><span data-i18n="audio.stability">Stability</span><strong data-range-value="stability">50%</strong></span>
+                <input id="stability" type="range" min="0" max="1" step="0.01" value="0.5" />
+              </label>
+              <label class="range-field">
+                <span><span data-i18n="audio.similarity">Similarity</span><strong data-range-value="similarity_boost">75%</strong></span>
+                <input id="similarity-boost" type="range" min="0" max="1" step="0.01" value="0.75" />
+              </label>
+              <label class="range-field">
+                <span><span data-i18n="audio.style">Style</span><strong data-range-value="style">0%</strong></span>
+                <input id="style" type="range" min="0" max="1" step="0.01" value="0" />
+              </label>
+              <label class="range-field">
+                <span><span data-i18n="audio.speed">Speed</span><strong data-range-value="speed">1.00x</strong></span>
+                <input id="speed" type="range" min="0.7" max="1.2" step="0.01" value="1" />
+              </label>
+            </div>
+            <label class="speaker-boost-toggle">
+              <input id="speaker-boost" type="checkbox" checked />
+              <span></span>
+              <strong data-i18n="audio.speakerBoost">Speaker boost</strong>
+            </label>
+          </div>
           <button id="generate-audio" class="button" type="button" style="width:100%;" data-i18n="audio.generate">Generate Voice</button>
+          <div>
+            <div class="audio-divider"><span data-i18n="audio.orUpload">or upload ready audio</span></div>
+            <label class="upload-zone audio-upload-zone">
+              <input id="audio-input" type="file" multiple accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg" class="hidden" />
+              <div class="upload-icon-box">♪</div>
+              <div><strong data-i18n="audio.drop">Drop audio here or click to browse</strong></div>
+              <div class="muted" data-i18n="audio.formats">MP3, WAV, M4A — multiple files supported</div>
+            </label>
+            <div id="audio-file-list" class="audio-file-list"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -202,7 +249,7 @@
           <h2 class="section-title" style="font-size:2.4rem;" data-i18n="images.title">Upload Images</h2>
           <p class="section-copy" data-i18n="images.copy">Upload images that will be combined with your audio into a video. Reorder as needed.</p>
         </div>
-        <label class="upload-zone">
+        <label class="upload-zone image-upload-zone">
           <input id="image-input" type="file" multiple accept="image/*" class="hidden" />
           <div class="upload-icon-box">🖼</div>
           <div><strong data-i18n="images.drop">Drop images here or click to browse</strong></div>
@@ -229,6 +276,23 @@
             <div class="muted" data-i18n="video.requirements">Requirements:</div>
             <div class="muted" data-i18n="video.reqAudio">Audio generated</div>
             <div class="muted" data-i18n="video.reqImages">Images uploaded</div>
+          </div>
+          <div class="video-settings-strip">
+            <label>
+              <span data-i18n="video.aspect">Aspect ratio</span>
+              <select id="video-aspect-ratio" class="select compact-select">
+                <option value="16:9">16:9 YouTube</option>
+                <option value="9:16">9:16 Shorts</option>
+                <option value="1:1">1:1 Square</option>
+              </select>
+            </label>
+            <label>
+              <span data-i18n="video.fit">Image fit</span>
+              <select id="video-fit" class="select compact-select">
+                <option value="cover" data-i18n="video.fitCover">Fill frame</option>
+                <option value="contain" data-i18n="video.fitContain">Keep full image</option>
+              </select>
+            </label>
           </div>
           <div class="button-row">
             <button id="compose-video" class="button" type="button" data-i18n="video.create">Create Video</button>
@@ -308,7 +372,7 @@
       </div>
     </footer>
 
-    <script type="module" src="/assets/js/home.js?v=text-file-1"></script>
+    <script type="module" src="/assets/js/home.js?v=audio-upload-1"></script>
   </body>
 </html>
 

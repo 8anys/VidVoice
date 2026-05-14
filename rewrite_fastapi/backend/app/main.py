@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
-from app.core.config import FRONTEND_DIR, UPLOADS_DIR
+from app.core.config import AUDIO_DIR, FRONTEND_DIR, UPLOADS_DIR, VIDEO_DIR
 
 
 app = FastAPI(title="VidVoice FastAPI Rewrite")
@@ -11,6 +11,8 @@ app.include_router(router)
 
 app.mount("/assets", StaticFiles(directory=FRONTEND_DIR / "assets"), name="assets")
 app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
+app.mount("/audio", StaticFiles(directory=AUDIO_DIR), name="audio")
+app.mount("/videos", StaticFiles(directory=VIDEO_DIR), name="videos")
 
 
 def serve_page(filename: str):

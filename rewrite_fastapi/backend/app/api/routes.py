@@ -6,7 +6,10 @@ from uuid import uuid4
 from fastapi import APIRouter, File, UploadFile
 
 from app.core.config import UPLOADS_DIR
+from app.services.elevenlabs_service import generate_speech, list_voices
+from app.services.generated_files_service import get_output_directory, import_generated_files, list_generated_files, set_output_directory
 from app.services.store import add_project, credits_store, profile_store, projects_store, uploaded_images
+from app.services.video_service import compose_video_file
 
 
 router = APIRouter(prefix="/api")
@@ -60,15 +63,32 @@ def translate(payload: dict):
 
 @router.post("/generate-audio")
 def generate_audio(payload: dict):
-    text = payload.get("text", "")
-    voice = payload.get("voice", {"label": "Rachel", "style": "Calm & Clear"})
-    return {
-        "generated": True,
-        "voice": voice,
-        "text": text,
-        "duration": "0:32",
-        "provider": "ElevenLabs",
-    }
+    return generate_speech(payload)
+
+
+@router.get("/voices")
+def get_voices():
+    return list_voices()
+
+
+@router.get("/generated-files")
+def get_generated_files(limit: int = 8):
+    return list_generated_files(limit)
+
+
+@router.post("/generated-files/import")
+async def import_generated(files: list[UploadFile] = File(...)):
+    return await import_generated_files(files)
+
+
+@router.get("/output-directory")
+def output_directory():
+    return get_output_directory()
+
+
+@router.post("/output-directory")
+def update_output_directory(payload: dict):
+    return set_output_directory(payload.get("path", ""))
 
 
 @router.post("/upload-images")
@@ -91,11 +111,5 @@ async def upload_images(files: list[UploadFile] = File(...)):
 
 @router.post("/compose-video")
 def compose_video(payload: dict):
-    image_count = len(payload.get("images", []))
-    return {
-        "done": True,
-        "slides": image_count,
-        "format": payload.get("format", "mp4"),
-        "message": "Video Ready",
-    }
+    return compose_video_file(payload)
 

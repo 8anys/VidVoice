@@ -10,6 +10,8 @@ This folder contains a separate rewrite of the current React project using:
 
 The original React project stays untouched in the project root.
 
+Generated audio/video files are kept inside `backend/storage` by default. Ready-made audio files can also be uploaded directly in the Step 1-2 audio block and reused for video composition.
+
 ## Structure
 
 ```text
@@ -53,14 +55,27 @@ python -m venv .venv
 pip install -r backend\requirements.txt
 ```
 
-5. Start server:
+5. Make sure `ffmpeg` and `ffprobe` are available in your terminal for MP4 generation:
+
+```powershell
+ffmpeg -version
+ffprobe -version
+```
+
+6. Add your ElevenLabs API key for voice generation:
+
+```powershell
+$env:ELEVENLABS_API_KEY="your_api_key_here"
+```
+
+7. Start server:
 
 ```powershell
 cd backend
 uvicorn app.main:app --reload
 ```
 
-6. Open:
+8. Open:
 
 ```text
 http://localhost:8000
