@@ -7,6 +7,7 @@ This folder contains a separate rewrite of the current React project using:
 - `JavaScript`
 - `Python`
 - `FastAPI`
+- `PostgreSQL`
 
 The original React project stays untouched in the project root.
 
@@ -32,6 +33,9 @@ rewrite_fastapi/
     profile.html
     settings.html
     credits.html
+  database/
+    init/
+      001_schema.sql
 ```
 
 ## Run
