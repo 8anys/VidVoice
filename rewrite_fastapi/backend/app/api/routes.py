@@ -9,6 +9,7 @@ from app.core.config import UPLOADS_DIR
 from app.services.elevenlabs_service import generate_speech, list_voices
 from app.services.generated_files_service import get_output_directory, import_generated_files, list_generated_files, set_output_directory
 from app.services.store import add_project, credits_store, profile_store, projects_store, uploaded_images
+from app.services.translation_service import translate_text
 from app.services.video_service import compose_video_file
 
 
@@ -48,6 +49,7 @@ def get_credits():
 
 @router.post("/translate")
 def translate(payload: dict):
+    return translate_text(payload.get("text", ""), payload.get("direction", "toEN"))
     text = payload.get("text", "").strip()
     direction = payload.get("direction", "toEN")
     if not text:

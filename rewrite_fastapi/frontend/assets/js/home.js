@@ -321,6 +321,28 @@ async function importAudioFiles(files) {
   renderAudioFiles();
 }
 
+async function translateScript(direction, button) {
+  const textarea = document.getElementById("script-text");
+  const text = textarea?.value.trim();
+  if (!textarea || !text) return;
+
+  const previousLabel = button.textContent;
+  button.classList.add("is-active");
+  button.disabled = true;
+  button.textContent = direction === "toEN" ? "Translating..." : "Перекладаємо...";
+  try {
+    const result = await api.translate({ text, direction });
+    textarea.value = result.text || "";
+  } catch (error) {
+    console.error("Failed to translate text", error);
+    alert(error.message || "Failed to translate text");
+  } finally {
+    button.classList.remove("is-active");
+    button.disabled = false;
+    button.textContent = previousLabel;
+  }
+}
+
 function renderVideoResult(result) {
   const target = document.getElementById("video-result");
   if (!target) return;
@@ -393,17 +415,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("translate-en")?.addEventListener("click", async (event) => {
-    event.currentTarget.classList.add("is-active");
-    const textarea = document.getElementById("script-text");
-    const result = await api.translate({ text: textarea.value, direction: "toEN" });
-    textarea.value = result.text;
+    await translateScript("toEN", event.currentTarget);
   });
 
   document.getElementById("translate-ua")?.addEventListener("click", async (event) => {
-    event.currentTarget.classList.add("is-active");
-    const textarea = document.getElementById("script-text");
-    const result = await api.translate({ text: textarea.value, direction: "toUA" });
-    textarea.value = result.text;
+    await translateScript("toUA", event.currentTarget);
   });
 
   document.getElementById("text-file-input")?.addEventListener("change", async (event) => {
