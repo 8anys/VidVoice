@@ -1,5 +1,5 @@
 ﻿import { api } from "./api.js";
-import { formatTranslation, getCurrentLanguage, initI18n, setCurrentLanguage, setYear, t, toggleHidden } from "./common.js?v=audio-upload-1";
+import { formatTranslation, getCurrentLanguage, initI18n, setCurrentLanguage, setYear, t, toggleHidden } from "./common.js?v=audio-list-1";
 
 const fallbackVoices = [
   { id: "21m00Tcm4TlvDq8ikWAM", label: "Rachel", style: "Calm & Clear" },
@@ -192,42 +192,6 @@ async function renderProfileMenu() {
   }
 }
 
-function renderAudio() {
-  const section = document.getElementById("audio-player");
-  const preview = document.getElementById("audio-preview");
-  if (!section || !preview) return;
-  toggleHidden(section, !state.generatedAudio);
-  if (!state.generatedAudio) return;
-
-  preview.innerHTML = `
-    <div class="inline-row" style="justify-content:space-between;margin-bottom:1rem;">
-      <div class="inline-row">
-        <div class="icon-box" style="width:2.25rem;height:2.25rem;"><span>♪</span></div>
-        <div>
-          <div><strong>${escapeHtml(state.generatedAudio.voice.label)} — ElevenLabs</strong></div>
-          <div class="muted">"${escapeHtml((state.generatedAudio.text || "").slice(0, 60))}..."</div>
-        </div>
-      </div>
-      <div style="width:0.5rem;height:0.5rem;border-radius:999px;background:#4ade80;"></div>
-    </div>
-    <div class="content-card is-active" style="background:color-mix(in srgb, var(--secondary) 70%, transparent); margin-bottom:1rem;">
-      <audio class="audio-control" controls src="${state.generatedAudio.audio_url || ""}"></audio>
-      <div class="muted audio-meta">${escapeHtml(state.generatedAudio.model_id || "eleven_multilingual_v2")} • ${state.generatedAudio.characters || 0} chars</div>
-    </div>
-    <div class="button-row">
-      <button class="outline-button" type="button" id="regenerate-audio">${t("audio.regenerate")}</button>
-      <a class="button" href="${state.generatedAudio.download_url || state.generatedAudio.audio_url || "#"}" download>${t("audio.download")}</a>
-    </div>
-  `;
-
-  document.getElementById("regenerate-audio")?.addEventListener("click", () => {
-    state.generatedAudio = null;
-    renderAudio();
-    renderAudioFiles();
-    document.getElementById("audio-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-}
-
 function renderImages() {
   const grid = document.getElementById("image-grid");
   if (!grid) return;
@@ -258,6 +222,7 @@ function renderAudioFiles() {
           <div class="audio-file-main">
             <strong>${escapeHtml(item.name)}</strong>
             <span>${item.size ? formatFileSize(item.size) : t("audio.ready")}</span>
+            <audio class="audio-file-player" controls preload="none" src="${item.url}"></audio>
           </div>
           <button class="outline-button audio-use-button" type="button" data-use-audio="${escapeHtml(item.id)}">${t("audio.use")}</button>
           <a class="ghost-button audio-use-button" href="${item.download_url || item.url}" download>${t("audio.downloadShort")}</a>
@@ -275,7 +240,6 @@ async function importAudioFiles(files) {
   state.audioFiles = [...items, ...state.audioFiles].slice(0, 12);
   if (!state.generatedAudio && items[0]) {
     state.generatedAudio = normalizeGeneratedItem(items[0]);
-    renderAudio();
   }
   renderAudioFiles();
 }
@@ -304,7 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setYear();
   initI18n({
     onChange: () => {
-      renderAudio();
       if (state.lastVideoResult) renderVideoResult(state.lastVideoResult);
       renderAudioFiles();
       renderProfileMenu();
@@ -314,7 +277,6 @@ document.addEventListener("DOMContentLoaded", () => {
   syncSelectedVoice();
   syncRangeValues();
   loadVoices();
-  renderAudio();
   renderAudioFiles();
   renderImages();
   renderProfileMenu();
@@ -401,9 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ...getVoiceSettings(),
       });
       state.audioFiles = [audioItemFromGeneratedAudio(state.generatedAudio), ...state.audioFiles].slice(0, 12);
-      renderAudio();
       renderAudioFiles();
-      document.getElementById("audio-player")?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
       console.error("Failed to generate audio", error);
       alert(error.message || "Failed to generate audio");
@@ -457,7 +417,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const item = state.audioFiles.find((file) => file.id === target.dataset.useAudio);
     if (!item) return;
     state.generatedAudio = normalizeGeneratedItem(item);
-    renderAudio();
     renderAudioFiles();
   });
 
