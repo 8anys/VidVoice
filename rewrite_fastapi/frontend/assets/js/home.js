@@ -1,5 +1,5 @@
 ﻿import { api } from "./api.js";
-import { formatTranslation, getCurrentLanguage, initI18n, setCurrentLanguage, setYear, t, toggleHidden } from "./common.js?v=audio-list-1";
+import { formatTranslation, getCurrentLanguage, initI18n, setCurrentLanguage, setYear, t, toggleHidden } from "./common.js?v=paired-video-1";
 
 const fallbackVoices = [
   { id: "21m00Tcm4TlvDq8ikWAM", label: "Rachel", style: "Calm & Clear" },
@@ -124,7 +124,7 @@ function normalizeGeneratedItem(item) {
 
 function audioItemFromGeneratedAudio(audio) {
   const url = audio.audio_url || "";
-  const name = url.split("/").pop() || `${audio.id || "audio"}.mp3`;
+  const name = "generated-audio.mp3";
   return {
     id: audio.id || url || name,
     type: "audio",
@@ -133,6 +133,37 @@ function audioItemFromGeneratedAudio(audio) {
     download_url: audio.download_url || url,
     size: audio.size || 0,
   };
+}
+
+function extractFileNumber(name = "") {
+  const match = String(name).match(/\d+/);
+  return match ? Number(match[0]) : null;
+}
+
+function buildMediaPairs() {
+  const audioByNumber = new Map();
+  const imageByNumber = new Map();
+
+  state.audioFiles.forEach((audio) => {
+    const number = extractFileNumber(audio.name);
+    if (number !== null && !audioByNumber.has(number)) audioByNumber.set(number, audio);
+  });
+
+  state.images.forEach((image) => {
+    const number = extractFileNumber(image.name);
+    if (number !== null && !imageByNumber.has(number)) imageByNumber.set(number, image);
+  });
+
+  const numbers = Array.from(new Set([...audioByNumber.keys(), ...imageByNumber.keys()])).sort((a, b) => a - b);
+  return numbers.map((number) => ({
+    number,
+    audio: audioByNumber.get(number) || null,
+    image: imageByNumber.get(number) || null,
+  }));
+}
+
+function getReadyPairs() {
+  return buildMediaPairs().filter((pair) => pair.audio && pair.image);
 }
 
 function getInitials(name = "", email = "") {
@@ -209,6 +240,7 @@ function renderImages() {
       `,
     )
     .join("");
+  renderPairs();
 }
 
 function renderAudioFiles() {
@@ -226,6 +258,51 @@ function renderAudioFiles() {
           </div>
           <button class="outline-button audio-use-button" type="button" data-use-audio="${escapeHtml(item.id)}">${t("audio.use")}</button>
           <a class="ghost-button audio-use-button" href="${item.download_url || item.url}" download>${t("audio.downloadShort")}</a>
+        </div>
+      `,
+    )
+    .join("");
+  renderPairs();
+}
+
+function renderPairs() {
+  const grid = document.getElementById("pair-grid");
+  const status = document.getElementById("pairing-status");
+  if (!grid || !status) return;
+
+  const pairs = buildMediaPairs();
+  const readyPairs = pairs.filter((pair) => pair.audio && pair.image);
+  const missingPairs = pairs.filter((pair) => !pair.audio || !pair.image);
+
+  if (!pairs.length) {
+    status.innerHTML = `<span class="muted">${t("video.pairEmpty")}</span>`;
+    grid.innerHTML = "";
+    return;
+  }
+
+  status.innerHTML = `
+    <span class="${missingPairs.length ? "pair-warning" : "pair-ready"}">
+      ${missingPairs.length ? t("video.pairWarning") : t("video.pairReady")}
+    </span>
+    <span class="muted">${readyPairs.length}/${pairs.length}</span>
+  `;
+
+  grid.innerHTML = pairs
+    .map(
+      (pair) => `
+        <div class="pair-card ${pair.audio && pair.image ? "is-ready" : "is-missing"}">
+          <div class="pair-number">${String(pair.number).padStart(2, "0")}</div>
+          <div class="pair-media">
+            ${
+              pair.image
+                ? `<img src="${pair.image.url}" alt="${escapeHtml(pair.image.name)}">`
+                : `<div class="pair-placeholder">${t("video.noImage")}</div>`
+            }
+          </div>
+          <div class="pair-info">
+            <strong>${pair.image ? escapeHtml(pair.image.name) : t("video.noImage")}</strong>
+            <span>${pair.audio ? escapeHtml(pair.audio.name) : t("video.noAudio")}</span>
+          </div>
         </div>
       `,
     )
@@ -270,6 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
     onChange: () => {
       if (state.lastVideoResult) renderVideoResult(state.lastVideoResult);
       renderAudioFiles();
+      renderPairs();
       renderProfileMenu();
     },
   });
@@ -279,6 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadVoices();
   renderAudioFiles();
   renderImages();
+  renderPairs();
   renderProfileMenu();
   initNavSectionHighlight();
 
@@ -475,7 +554,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("compose-video")?.addEventListener("click", async (event) => {
-    if (!state.generatedAudio || !state.images.length) return;
+    const pairs = getReadyPairs();
+    if (!pairs.length || pairs.length !== buildMediaPairs().length) {
+      alert(t("video.pairWarning"));
+      return;
+    }
     const button = event.currentTarget;
     const previousLabel = button.textContent;
     button.classList.add("is-active");
@@ -483,11 +566,9 @@ document.addEventListener("DOMContentLoaded", () => {
     button.textContent = t("video.creating");
     try {
       const result = await api.composeVideo({
-        images: state.images,
-        audio: state.generatedAudio,
-        audio_url: state.generatedAudio.audio_url,
+        pairs,
         aspect_ratio: document.getElementById("video-aspect-ratio")?.value || "16:9",
-        fit: document.getElementById("video-fit")?.value || "cover",
+        motion: document.getElementById("video-fit")?.value === "contain" ? "none" : "slow_zoom",
         format: "mp4",
       });
       state.lastVideoResult = result;

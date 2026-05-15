@@ -80,58 +80,119 @@ def _concat_path(path: Path) -> str:
     return str(path).replace("\\", "/").replace("'", "'\\''")
 
 
-def _build_concat_file(image_paths: list[Path], duration_per_slide: float, target: Path) -> None:
+def _build_concat_file(paths: list[Path], target: Path) -> None:
     lines = []
-    for image_path in image_paths:
-        lines.append(f"file '{_concat_path(image_path)}'")
-        lines.append(f"duration {duration_per_slide:.3f}")
-    lines.append(f"file '{_concat_path(image_paths[-1])}'")
+    for path in paths:
+        lines.append(f"file '{_concat_path(path)}'")
     target.write_text("\n".join(lines), encoding="utf-8")
 
 
-def _video_filter(width: int, height: int, fit: str) -> str:
-    if fit == "contain":
-        return (
+ANIMATION_SEQUENCE = ("zoom_in", "pan_up", "pan_down", "zoom_in")
+
+
+def _scene_filter(width: int, height: int, animation: str) -> str:
+    if animation == "pan_up":
+        overlay_y = "(H-h)/2-28*t"
+        fg_filter = (
             f"scale={width}:{height}:force_original_aspect_ratio=decrease,"
-            f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:color=black,"
-            "setsar=1,format=yuv420p"
+            "scale=iw*1.08:ih*1.08,setsar=1[fg]"
         )
+    elif animation == "pan_down":
+        overlay_y = "(H-h)/2+28*t"
+        fg_filter = (
+            f"scale={width}:{height}:force_original_aspect_ratio=decrease,"
+            "scale=iw*1.08:ih*1.08,setsar=1[fg]"
+        )
+    else:
+        overlay_y = "(H-h)/2"
+        fg_filter = (
+            f"scale={width}:{height}:force_original_aspect_ratio=decrease,"
+            "scale='iw*(1+0.028*t)':'ih*(1+0.028*t)':eval=frame,setsar=1[fg]"
+        )
+
     return (
-        f"scale={width}:{height}:force_original_aspect_ratio=increase,"
-        f"crop={width}:{height},setsar=1,format=yuv420p"
+        "[0:v]split=2[bgsrc][fgsrc];"
+        f"[bgsrc]scale={width}:{height}:force_original_aspect_ratio=increase,"
+        f"crop={width}:{height},boxblur=24:2,eq=saturation=0.82:brightness=-0.04[bg];"
+        f"[fgsrc]{fg_filter};"
+        f"[bg][fg]overlay=(W-w)/2:{overlay_y}:format=auto,format=yuv420p[v]"
     )
 
 
 def compose_video_file(payload: dict) -> dict:
-    images = payload.get("images") if isinstance(payload.get("images"), list) else []
-    audio = payload.get("audio") if isinstance(payload.get("audio"), dict) else {}
-    audio_url = payload.get("audio_url") or audio.get("audio_url")
-    if not audio_url:
-        raise HTTPException(status_code=400, detail="Generated audio is required.")
-    if not images:
-        raise HTTPException(status_code=400, detail="At least one image is required.")
-
-    image_paths = [_path_from_media_url(str(item.get("url", "")), "image") for item in images if isinstance(item, dict)]
-    if not image_paths:
-        raise HTTPException(status_code=400, detail="At least one valid image is required.")
-
-    audio_path = _path_from_media_url(str(audio_url), "audio")
-    duration = _probe_duration(audio_path)
-    duration_per_slide = duration / len(image_paths)
+    pairs = payload.get("pairs") if isinstance(payload.get("pairs"), list) else []
+    if not pairs:
+        raise HTTPException(status_code=400, detail="Numbered image/audio pairs are required.")
 
     aspect_ratio = str(payload.get("aspect_ratio") or "16:9")
     width, height = ASPECT_RATIOS.get(aspect_ratio, ASPECT_RATIOS["16:9"])
-    fit = "contain" if payload.get("fit") == "contain" else "cover"
+    motion_enabled = payload.get("motion") != "none"
 
     video_id = uuid4().hex
     output_name = f"{video_id}.mp4"
     output_path = VIDEO_DIR / output_name
     temp_dir = VIDEO_DIR / "_tmp"
     temp_dir.mkdir(parents=True, exist_ok=True)
-    concat_file = temp_dir / f"{video_id}.txt"
-    _build_concat_file(image_paths, duration_per_slide, concat_file)
-
     ffmpeg = _ensure_tool("ffmpeg")
+    clip_paths = []
+    total_duration = 0.0
+
+    for index, pair in enumerate(pairs, start=1):
+        if not isinstance(pair, dict):
+            continue
+        image = pair.get("image") if isinstance(pair.get("image"), dict) else {}
+        audio = pair.get("audio") if isinstance(pair.get("audio"), dict) else {}
+        image_path = _path_from_media_url(str(image.get("url", "")), "image")
+        audio_path = _path_from_media_url(str(audio.get("url") or audio.get("audio_url") or ""), "audio")
+        duration = _probe_duration(audio_path)
+        animation = ANIMATION_SEQUENCE[(index - 1) % len(ANIMATION_SEQUENCE)] if motion_enabled else "none"
+        total_duration += duration
+        clip_path = temp_dir / f"{video_id}_{index:04d}.mp4"
+        clip_paths.append(clip_path)
+
+        scene_command = [
+            ffmpeg,
+            "-y",
+            "-loop",
+            "1",
+            "-t",
+            f"{duration:.3f}",
+            "-i",
+            str(image_path),
+            "-i",
+            str(audio_path),
+            "-filter_complex",
+            _scene_filter(width, height, animation),
+            "-map",
+            "[v]",
+            "-map",
+            "1:a",
+            "-shortest",
+            "-r",
+            "30",
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "22",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "192k",
+            "-pix_fmt",
+            "yuv420p",
+            str(clip_path),
+        ]
+        result = subprocess.run(scene_command, capture_output=True, text=True, timeout=300)
+        if result.returncode != 0 or not clip_path.exists():
+            raise HTTPException(status_code=500, detail=result.stderr.strip() or f"Scene {index} generation failed.")
+
+    if not clip_paths:
+        raise HTTPException(status_code=400, detail="At least one valid image/audio pair is required.")
+
+    concat_file = temp_dir / f"{video_id}.txt"
+    _build_concat_file(clip_paths, concat_file)
     command = [
         ffmpeg,
         "-y",
@@ -141,23 +202,8 @@ def compose_video_file(payload: dict) -> dict:
         "0",
         "-i",
         str(concat_file),
-        "-i",
-        str(audio_path),
-        "-vf",
-        _video_filter(width, height, fit),
-        "-shortest",
-        "-r",
-        "30",
-        "-c:v",
-        "libx264",
-        "-preset",
-        "veryfast",
-        "-crf",
-        "23",
-        "-c:a",
-        "aac",
-        "-b:a",
-        "192k",
+        "-c",
+        "copy",
         "-movflags",
         "+faststart",
         str(output_path),
@@ -165,6 +211,8 @@ def compose_video_file(payload: dict) -> dict:
     result = subprocess.run(command, capture_output=True, text=True, timeout=300)
     try:
         concat_file.unlink(missing_ok=True)
+        for clip_path in clip_paths:
+            clip_path.unlink(missing_ok=True)
     except OSError:
         pass
 
@@ -176,11 +224,11 @@ def compose_video_file(payload: dict) -> dict:
     return {
         "done": True,
         "id": video_id,
-        "slides": len(image_paths),
+        "slides": len(clip_paths),
         "format": "mp4",
-        "duration": round(duration, 2),
+        "duration": round(total_duration, 2),
         "aspect_ratio": aspect_ratio,
-        "fit": fit,
+        "fit": "blurred_background",
         "video_url": f"/videos/{output_name}",
         "download_url": f"/videos/{output_name}",
         "output_path": copied_output_path,

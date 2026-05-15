@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VidVoice Studio — FastAPI Rewrite</title>
-    <link rel="stylesheet" href="/assets/css/styles.css?v=audio-list-1" />
+    <link rel="stylesheet" href="/assets/css/styles.css?v=paired-video-1" />
   </head>
   <body>
     <header class="navbar">
@@ -263,6 +263,8 @@
             <strong data-i18n="video.how">How it works:</strong>
             <span class="card-copy" data-i18n="video.howCopy"> A script combines your audio and images into a video — each image is displayed for an equal time slice. This is a simple composition, not AI generation.</span>
           </div>
+          <div id="pairing-status" class="pairing-status"></div>
+          <div id="pair-grid" class="pair-grid"></div>
           <div class="button-row" style="margin-bottom:1rem;">
             <div class="muted" data-i18n="video.requirements">Requirements:</div>
             <div class="muted" data-i18n="video.reqAudio">Audio generated</div>
@@ -363,7 +365,7 @@
       </div>
     </footer>
 
-    <script type="module" src="/assets/js/home.js?v=audio-list-1"></script>
+    <script type="module" src="/assets/js/home.js?v=paired-video-1"></script>
   </body>
 </html>
 

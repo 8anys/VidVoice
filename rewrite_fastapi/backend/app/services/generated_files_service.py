@@ -69,13 +69,13 @@ def copy_to_output(path: Path, media_type: str) -> str | None:
     return str(target)
 
 
-def _media_item(path: Path, media_type: str, output_path: str | None = None) -> dict:
+def _media_item(path: Path, media_type: str, output_path: str | None = None, display_name: str | None = None) -> dict:
     stat = path.stat()
     url_prefix = "/audio" if media_type == "audio" else "/videos"
     return {
         "id": path.stem,
         "type": media_type,
-        "name": path.name,
+        "name": display_name or path.name,
         "url": f"{url_prefix}/{path.name}",
         "download_url": f"{url_prefix}/{path.name}",
         "size": stat.st_size,
@@ -113,5 +113,5 @@ async def import_generated_files(files: list[UploadFile]) -> dict:
         content = await file.read()
         target.write_bytes(content)
         output_path = copy_to_output(target, media_type)
-        imported.append(_media_item(target, media_type, output_path))
+        imported.append(_media_item(target, media_type, output_path, file.filename or target.name))
     return {"items": imported}
