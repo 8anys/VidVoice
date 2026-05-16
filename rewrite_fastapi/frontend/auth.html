@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VidVoice - Sign in</title>
+    <link rel="stylesheet" href="/assets/css/styles.css?v=auth-1" />
+  </head>
+  <body>
+    <div class="simple-shell auth-shell">
+      <a class="back-link" href="/">← Back</a>
+      <div class="page-card auth-card">
+        <div class="section-head" style="text-align:left;max-width:none;margin:0 0 1.5rem;">
+          <div class="eyebrow">VidVoice</div>
+          <h1 class="section-title" style="font-size:2.2rem;" data-auth-title>Sign in</h1>
+          <p class="section-copy" data-auth-copy>Use your account to save projects and profile data.</p>
+        </div>
+        <div class="auth-tabs">
+          <button id="login-tab" class="outline-button is-active" type="button">Login</button>
+          <button id="register-tab" class="outline-button" type="button">Register</button>
+        </div>
+        <div class="editor-grid" style="margin-top:1rem;">
+          <input id="auth-name" class="input hidden" type="text" placeholder="Name" autocomplete="name" />
+          <input id="auth-email" class="input" type="email" placeholder="Email" autocomplete="email" />
+          <input id="auth-password" class="input" type="password" placeholder="Password" autocomplete="current-password" />
+          <button id="auth-submit" class="button" type="button">Login</button>
+          <div id="auth-message" class="muted"></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/assets/js/auth.js?v=auth-1"></script>
+  </body>
+</html>

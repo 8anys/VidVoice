@@ -2,7 +2,7 @@
 
 Ця папка містить SQL-схему бази даних для переписаної FastAPI-версії VidVoice.
 
-Docker тут не використовується. Очікується, що PostgreSQL встановлений локально на Windows, а базу ти створюєш сам через **SQL Shell (psql)** або **pgAdmin**.
+Docker тут не використовується. Очікується, що PostgreSQL встановлений локально на Windows, а база створюється через **SQL Shell (psql)** або **pgAdmin**.
 
 ## Структура
 
@@ -14,39 +14,51 @@ database/
     001_schema.sql
 ```
 
-## Варіант 1: Через SQL Shell (psql)
+## 1. Створи базу даних
 
-### 1. Відкрий SQL Shell
-
-Запусти **SQL Shell (psql)** з меню Windows.
-
-На питання відповідай так:
+Якщо база `vidvoice` ще не створена, відкрий **SQL Shell (psql)** і зайди в стандартну базу `postgres`:
 
 ```text
-Server [localhost]: 
-Database [postgres]: vidvoice
-Port [5432]: 
+Server [localhost]:
+Database [postgres]: postgres
+Port [5432]:
 Username [postgres]: postgres
 Password for user postgres: твій_пароль
 ```
 
-Пояснення:
+Після входу виконай:
 
-- `Server [localhost]` - просто натисни Enter.
-- `Database [postgres]` - введи назву своєї бази, наприклад `vidvoice`.
-- `Port [5432]` - просто натисни Enter.
-- `Username [postgres]` - зазвичай `postgres`.
-- Пароль не буде видно під час введення, це нормально.
+```sql
+CREATE DATABASE vidvoice;
+```
 
-Якщо база `vidvoice` вже створена, після входу ти побачиш щось схоже:
+Потім вийди:
+
+```sql
+\q
+```
+
+## 2. Зайди в базу `vidvoice`
+
+Знову відкрий **SQL Shell (psql)**:
+
+```text
+Server [localhost]:
+Database [postgres]: vidvoice
+Port [5432]:
+Username [postgres]: postgres
+Password for user postgres: твій_пароль
+```
+
+Якщо все добре, ти побачиш:
 
 ```text
 vidvoice=#
 ```
 
-### 2. Виконай SQL-схему
+## 3. Виконай SQL-схему
 
-У SQL Shell введи команду з повним шляхом до файлу:
+У SQL Shell введи:
 
 ```sql
 \i 'E:/Diplom/Ivan/VidVoice/rewrite_fastapi/database/init/001_schema.sql'
@@ -54,9 +66,9 @@ vidvoice=#
 
 Важливо:
 
-- Використовуй `/`, а не `\`, у шляху.
-- Шлях треба брати в одинарні лапки.
-- Команда починається з `\i`.
+- використовуй `/`, а не `\`, у шляху;
+- шлях має бути в одинарних лапках;
+- команда починається з `\i`.
 
 Після виконання мають з’явитися повідомлення типу:
 
@@ -66,9 +78,7 @@ CREATE INDEX
 INSERT 0 2
 ```
 
-Це означає, що таблиці створилися.
-
-### 3. Перевір таблиці
+## 4. Перевір таблиці
 
 У SQL Shell введи:
 
@@ -76,10 +86,11 @@ INSERT 0 2
 \dt
 ```
 
-Ти маєш побачити список таблиць, наприклад:
+Ти маєш побачити таблиці, наприклад:
 
 ```text
 app_user
+user_profile
 project
 project_scene
 media_file
@@ -94,32 +105,95 @@ usage_event
 \q
 ```
 
-## Якщо база ще не створена
+## 5. Запусти backend із підключенням до бази
 
-Якщо при вході в SQL Shell база `vidvoice` не існує, зайди спочатку в стандартну базу `postgres`:
+Відкрий PowerShell у папці проєкту:
+
+```powershell
+cd E:\Diplom\Ivan\VidVoice\rewrite_fastapi
+```
+
+Активуй віртуальне середовище:
+
+```powershell
+.venv\Scripts\activate
+```
+
+Встанови залежності:
+
+```powershell
+pip install -r backend\requirements.txt
+```
+
+Підключи backend до PostgreSQL. Заміни `твій_пароль` на реальний пароль від користувача `postgres`:
+
+```powershell
+$env:DATABASE_URL="postgresql://postgres:твій_пароль@localhost:5432/vidvoice"
+```
+
+Додай секрет для login-токенів:
+
+```powershell
+$env:VIDVOICE_SECRET_KEY="my_local_vidvoice_secret_123"
+```
+
+Якщо ти використовуєш ElevenLabs, додай API key:
+
+```powershell
+$env:ELEVENLABS_API_KEY="your_api_key_here"
+```
+
+Перейди в backend і запусти сервер:
+
+```powershell
+cd backend
+uvicorn app.main:app --reload
+```
+
+## 6. Відкрий сайт
+
+Головна сторінка:
 
 ```text
-Server [localhost]: 
-Database [postgres]: postgres
-Port [5432]: 
-Username [postgres]: postgres
+http://localhost:8000
 ```
 
-Після входу створи базу:
+Сторінка реєстрації та входу:
+
+```text
+http://localhost:8000/auth
+```
+
+На сторінці `/auth` обери `Register`, введи ім’я, email і пароль. Після успішної реєстрації сайт перекине тебе в профіль.
+
+## 7. Перевір, що користувач додався в базу
+
+Зайди в SQL Shell у базу `vidvoice` і виконай:
 
 ```sql
-CREATE DATABASE vidvoice;
+SELECT id, email, display_name, role, created_at
+FROM app_user;
 ```
 
-Потім вийди:
+Перевір профіль користувача:
 
 ```sql
-\q
+SELECT *
+FROM user_profile;
 ```
 
-І зайди знову, але вже в базу `vidvoice`.
+Перевір кредитний акаунт:
 
-## Варіант 2: Через pgAdmin
+```sql
+SELECT *
+FROM credit_account;
+```
+
+Якщо реєстрація спрацювала, у `app_user` буде новий користувач, у `user_profile` буде його профіль, а в `credit_account` буде стартовий запис із кредитами.
+
+## 8. Варіант через pgAdmin
+
+Якщо зручніше через pgAdmin:
 
 1. Відкрий pgAdmin.
 2. Створи базу `vidvoice`, якщо її ще немає.
@@ -131,21 +205,8 @@ CREATE DATABASE vidvoice;
 rewrite_fastapi/database/init/001_schema.sql
 ```
 
-6. Виконай його кнопкою Execute.
-
-## Підключення для майбутнього backend
-
-Коли будемо підключати FastAPI до PostgreSQL, потрібен буде connection string:
-
-```powershell
-$env:DATABASE_URL="postgresql://postgres:твій_пароль@localhost:5432/vidvoice"
-```
-
-Якщо ти створиш окремого користувача для проєкту, наприклад `vidvoice`, тоді рядок буде:
-
-```powershell
-$env:DATABASE_URL="postgresql://vidvoice:пароль@localhost:5432/vidvoice"
-```
+6. Виконай його кнопкою **Execute**.
+7. Запусти backend за інструкцією вище.
 
 ## Що є в схемі
 

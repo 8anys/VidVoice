@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VidVoice Studio — FastAPI Rewrite</title>
-    <link rel="stylesheet" href="/assets/css/styles.css?v=paired-video-1" />
+    <link rel="stylesheet" href="/assets/css/styles.css?v=auth-modal-4" />
   </head>
   <body>
     <header class="navbar">
@@ -27,7 +27,7 @@
           <button id="site-theme-toggle" class="nav-theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
             <span class="theme-icon" aria-hidden="true"></span>
           </button>
-          <a href="#audio-editor" class="nav-start" data-i18n="common.start">Start</a>
+          <a href="#audio-editor" class="nav-start" data-auth-required data-i18n="common.start">Start</a>
           <div class="profile-menu">
             <button id="profile-toggle" type="button" class="avatar-button" aria-label="Open profile menu">
               <span id="profile-initials">IV</span>
@@ -73,7 +73,7 @@
             <h1 class="hero-title" data-i18n="hero.title">Turn text into<br><span style="color:var(--primary)">voice</span> and <span style="color:var(--accent)">video</span></h1>
             <p class="hero-copy" data-i18n="hero.copy">Write or paste your text, translate it, generate a professional voiceover with ElevenLabs, add your images, and export a finished video — all in one place.</p>
             <div class="hero-actions">
-              <a class="button" href="#audio-editor" data-i18n="hero.start">Start generating</a>
+              <a class="button" href="#audio-editor" data-auth-required data-i18n="hero.start">Start generating</a>
             </div>
             <div class="stats-row">
               <div><div class="eyebrow">50+</div><div class="muted" data-i18n="hero.aiVoices">AI Voices</div></div>
@@ -323,7 +323,7 @@
           <div class="eyebrow" style="position:relative;" data-i18n="cta.ready">Ready to start?</div>
           <h2 class="section-title" style="position:relative;" data-i18n="cta.title">Create your first video today</h2>
           <p class="section-copy" style="position:relative;max-width:36rem;margin:0 auto 2rem;" data-i18n="cta.copy">Write, translate, voice, compose — everything you need in one page.</p>
-          <a class="button" href="#audio-editor" style="position:relative;" data-i18n="cta.button">Start now</a>
+          <a class="button" href="#audio-editor" style="position:relative;" data-auth-required data-i18n="cta.button">Start now</a>
         </div>
       </div>
     </section>
@@ -365,7 +365,60 @@
       </div>
     </footer>
 
-    <script type="module" src="/assets/js/home.js?v=translate-fix-1"></script>
+    <div id="auth-modal" class="auth-modal hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <div class="auth-modal-backdrop" data-auth-close></div>
+      <div class="auth-modal-panel">
+        <button class="auth-modal-close" type="button" data-auth-close aria-label="Close">×</button>
+        <div class="auth-modal-media">
+          <div class="auth-modal-media-shade"></div>
+          <div class="auth-modal-media-content">
+            <div class="eyebrow">VidVoice Studio</div>
+            <h3>Start creating</h3>
+            <p>Text, voice and video in one workspace.</p>
+            <div class="auth-step-row">
+              <span class="is-active">
+                <strong>1</strong>
+                <b>Generate voice</b>
+                <small>Use ElevenLabs voices and tune the sound.</small>
+              </span>
+              <span>
+                <strong>2</strong>
+                <b>Add scenes</b>
+                <small>Upload numbered images and pair them with audio.</small>
+              </span>
+              <span>
+                <strong>3</strong>
+                <b>Export video</b>
+                <small>Create MP4 with smooth frame animation.</small>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="auth-modal-content">
+          <div class="eyebrow" id="auth-modal-kicker">VidVoice account</div>
+          <h2 id="auth-modal-title" class="section-title auth-modal-title">Create an account to continue</h2>
+          <p id="auth-modal-copy" class="section-copy auth-modal-copy">Register or sign in before using generation tools.</p>
+          <div class="auth-social-row">
+            <button id="modal-google-auth" class="auth-social-button" type="button"><span>G</span> Google</button>
+            <button id="modal-github-auth" class="auth-social-button" type="button"><span>GH</span> GitHub</button>
+          </div>
+          <div class="auth-divider"><span>or</span></div>
+          <div class="auth-tabs">
+            <button id="modal-login-tab" class="outline-button" type="button">Login</button>
+            <button id="modal-register-tab" class="outline-button is-active" type="button">Register</button>
+          </div>
+          <div class="auth-modal-form">
+            <input id="modal-auth-name" class="input" type="text" placeholder="Name" autocomplete="name" />
+            <input id="modal-auth-email" class="input" type="email" placeholder="Email" autocomplete="email" />
+            <input id="modal-auth-password" class="input" type="password" placeholder="Password" autocomplete="current-password" />
+            <button id="modal-auth-submit" class="button" type="button">Register</button>
+            <div id="modal-auth-message" class="muted auth-modal-message"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/assets/js/home.js?v=auth-modal-2"></script>
   </body>
 </html>
 

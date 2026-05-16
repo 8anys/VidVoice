@@ -34,6 +34,11 @@ def profile():
     return serve_page("profile.html")
 
 
+@app.get("/auth", include_in_schema=False)
+def auth():
+    return serve_page("auth.html")
+
+
 @app.get("/settings", include_in_schema=False)
 def settings():
     return serve_page("settings.html")

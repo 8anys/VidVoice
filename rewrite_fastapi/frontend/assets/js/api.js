@@ -2,8 +2,27 @@ const jsonHeaders = {
   "Content-Type": "application/json",
 };
 
+const TOKEN_STORAGE_KEY = "vidvoice_auth_token";
+
+export function getAuthToken() {
+  return localStorage.getItem(TOKEN_STORAGE_KEY) || "";
+}
+
+export function setAuthToken(token) {
+  if (token) {
+    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+  }
+}
+
 async function request(path, options = {}) {
-  const response = await fetch(path, options);
+  const token = getAuthToken();
+  const headers = {
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+  const response = await fetch(path, { ...options, headers });
   if (!response.ok) {
     let message = `Request failed: ${response.status}`;
     try {
@@ -19,6 +38,19 @@ async function request(path, options = {}) {
 
 export const api = {
   health: () => request("/api/health"),
+  register: (payload) =>
+    request("/api/auth/register", {
+      method: "POST",
+      headers: jsonHeaders,
+      body: JSON.stringify(payload),
+    }),
+  login: (payload) =>
+    request("/api/auth/login", {
+      method: "POST",
+      headers: jsonHeaders,
+      body: JSON.stringify(payload),
+    }),
+  me: () => request("/api/auth/me"),
   getProfile: () => request("/api/profile"),
   updateProfile: (payload) =>
     request("/api/profile", {
@@ -32,6 +64,16 @@ export const api = {
       method: "POST",
       headers: jsonHeaders,
       body: JSON.stringify(payload),
+    }),
+  updateProject: (id, payload) =>
+    request(`/api/projects/${id}`, {
+      method: "PUT",
+      headers: jsonHeaders,
+      body: JSON.stringify(payload),
+    }),
+  deleteProject: (id) =>
+    request(`/api/projects/${id}`, {
+      method: "DELETE",
     }),
   getCredits: () => request("/api/credits"),
   getVoices: () => request("/api/voices"),

@@ -1,4 +1,4 @@
-﻿import { api } from "./api.js";
+﻿import { api, getAuthToken, setAuthToken } from "./api.js";
 import { formatTranslation, getCurrentLanguage, initI18n, setCurrentLanguage, setYear, t, toggleHidden } from "./common.js?v=paired-video-1";
 
 const fallbackVoices = [
@@ -15,6 +15,8 @@ const state = {
   audioFiles: [],
   images: [],
   profileOpen: false,
+  authMode: "register",
+  authIntentTarget: "#audio-editor",
 };
 
 function escapeHtml(value = "") {
@@ -24,6 +26,66 @@ function escapeHtml(value = "") {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function isAuthenticated() {
+  return Boolean(getAuthToken());
+}
+
+function authText() {
+  const uk = getCurrentLanguage() === "uk";
+  return {
+    kicker: uk ? "Акаунт VidVoice" : "VidVoice account",
+    registerTitle: uk ? "Створи акаунт, щоб продовжити" : "Create an account to continue",
+    loginTitle: uk ? "Увійди, щоб продовжити" : "Sign in to continue",
+    copy: uk ? "Генерація аудіо, зображень і відео доступна після реєстрації." : "Generation tools are available after registration.",
+    login: uk ? "Увійти" : "Login",
+    register: uk ? "Реєстрація" : "Register",
+    name: uk ? "Ім'я" : "Name",
+    email: uk ? "Email" : "Email",
+    password: uk ? "Пароль" : "Password",
+    loadingLogin: uk ? "Вхід..." : "Signing in...",
+    loadingRegister: uk ? "Створення..." : "Creating...",
+    failed: uk ? "Не вдалося увійти або зареєструватися." : "Authentication failed.",
+    oauthPending: uk
+      ? "Для входу через {provider} треба додати OAuth ключі в backend."
+      : "{provider} OAuth keys need to be added to the backend first.",
+  };
+}
+
+function syncAuthModal() {
+  const labels = authText();
+  document.getElementById("auth-modal-kicker").textContent = labels.kicker;
+  document.getElementById("auth-modal-title").textContent = state.authMode === "login" ? labels.loginTitle : labels.registerTitle;
+  document.getElementById("auth-modal-copy").textContent = labels.copy;
+  document.getElementById("modal-login-tab")?.classList.toggle("is-active", state.authMode === "login");
+  document.getElementById("modal-register-tab")?.classList.toggle("is-active", state.authMode === "register");
+  toggleHidden(document.getElementById("modal-auth-name"), state.authMode !== "register");
+  document.getElementById("modal-login-tab").textContent = labels.login;
+  document.getElementById("modal-register-tab").textContent = labels.register;
+  document.getElementById("modal-auth-name").placeholder = labels.name;
+  document.getElementById("modal-auth-email").placeholder = labels.email;
+  document.getElementById("modal-auth-password").placeholder = labels.password;
+  document.getElementById("modal-auth-submit").textContent = state.authMode === "login" ? labels.login : labels.register;
+}
+
+function openAuthModal(target = "#audio-editor") {
+  state.authIntentTarget = target;
+  state.authMode = "register";
+  syncAuthModal();
+  toggleHidden(document.getElementById("auth-modal"), false);
+  document.getElementById("modal-auth-email")?.focus();
+}
+
+function closeAuthModal() {
+  toggleHidden(document.getElementById("auth-modal"), true);
+  document.getElementById("modal-auth-message").textContent = "";
+}
+
+function requireAuth(target = "#audio-editor") {
+  if (isAuthenticated()) return true;
+  openAuthModal(target);
+  return false;
 }
 
 function renderVoiceOptions() {
@@ -218,8 +280,15 @@ async function renderProfileMenu() {
     document.getElementById("profile-dropdown-name").textContent = profile.full_name || "User";
     document.getElementById("profile-dropdown-email").textContent = profile.email || "";
     document.getElementById("profile-theme-badge").textContent = t("common.dark");
+    const logoutLabel = document.querySelector(".logout-item span");
+    if (logoutLabel) logoutLabel.textContent = t("common.logout");
   } catch (error) {
     console.error("Failed to load profile menu", error);
+    document.getElementById("profile-dropdown-name").textContent = "Guest";
+    document.getElementById("profile-dropdown-email").textContent =
+      getCurrentLanguage() === "uk" ? "Увійди, щоб зберігати дані" : "Sign in to save data";
+    const logoutLabel = document.querySelector(".logout-item span");
+    if (logoutLabel) logoutLabel.textContent = getCurrentLanguage() === "uk" ? "Увійти" : "Sign in";
   }
 }
 
@@ -371,6 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
       renderAudioFiles();
       renderPairs();
       renderProfileMenu();
+      syncAuthModal();
     },
   });
   renderVoiceOptions();
@@ -383,6 +453,62 @@ document.addEventListener("DOMContentLoaded", () => {
   renderProfileMenu();
   initNavSectionHighlight();
 
+  document.querySelectorAll("[data-auth-required]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (requireAuth(link.getAttribute("href") || "#audio-editor")) return;
+      event.preventDefault();
+    });
+  });
+
+  document.querySelectorAll("[data-auth-close]").forEach((item) => {
+    item.addEventListener("click", closeAuthModal);
+  });
+
+  document.getElementById("modal-login-tab")?.addEventListener("click", () => {
+    state.authMode = "login";
+    syncAuthModal();
+  });
+
+  document.getElementById("modal-register-tab")?.addEventListener("click", () => {
+    state.authMode = "register";
+    syncAuthModal();
+  });
+
+  document.getElementById("modal-auth-submit")?.addEventListener("click", async (event) => {
+    const labels = authText();
+    const button = event.currentTarget;
+    const message = document.getElementById("modal-auth-message");
+    const payload = {
+      full_name: document.getElementById("modal-auth-name")?.value || "",
+      email: document.getElementById("modal-auth-email")?.value || "",
+      password: document.getElementById("modal-auth-password")?.value || "",
+    };
+    const previousLabel = button.textContent;
+    button.disabled = true;
+    button.textContent = state.authMode === "login" ? labels.loadingLogin : labels.loadingRegister;
+    message.textContent = "";
+    try {
+      const result = state.authMode === "login" ? await api.login(payload) : await api.register(payload);
+      setAuthToken(result.token);
+      closeAuthModal();
+      await renderProfileMenu();
+      document.querySelector(state.authIntentTarget)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      message.textContent = error.message || labels.failed;
+    } finally {
+      button.disabled = false;
+      button.textContent = previousLabel;
+    }
+  });
+
+  document.getElementById("modal-google-auth")?.addEventListener("click", () => {
+    document.getElementById("modal-auth-message").textContent = authText().oauthPending.replace("{provider}", "Google");
+  });
+
+  document.getElementById("modal-github-auth")?.addEventListener("click", () => {
+    document.getElementById("modal-auth-message").textContent = authText().oauthPending.replace("{provider}", "GitHub");
+  });
+
   document.getElementById("profile-toggle")?.addEventListener("click", () => {
     state.profileOpen = !state.profileOpen;
     toggleHidden(document.getElementById("profile-dropdown"), !state.profileOpen);
@@ -391,6 +517,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("profile-language-toggle")?.addEventListener("click", () => {
     setCurrentLanguage(getCurrentLanguage() === "uk" ? "en" : "uk");
+  });
+
+  document.querySelector(".logout-item")?.addEventListener("click", () => {
+    setAuthToken("");
+    renderProfileMenu();
+    openAuthModal("#audio-editor");
   });
 
   document.addEventListener("click", (event) => {
@@ -415,14 +547,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("translate-en")?.addEventListener("click", async (event) => {
+    if (!requireAuth("#audio-editor")) return;
     await translateScript("toEN", event.currentTarget);
   });
 
   document.getElementById("translate-ua")?.addEventListener("click", async (event) => {
+    if (!requireAuth("#audio-editor")) return;
     await translateScript("toUA", event.currentTarget);
   });
 
   document.getElementById("text-file-input")?.addEventListener("change", async (event) => {
+    if (!requireAuth("#audio-editor")) {
+      event.target.value = "";
+      return;
+    }
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -443,6 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("generate-audio")?.addEventListener("click", async (event) => {
+    if (!requireAuth("#audio-editor")) return;
     const text = document.getElementById("script-text")?.value.trim();
     if (!text) return;
     const button = event.currentTarget;
@@ -470,6 +609,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("audio-input")?.addEventListener("change", async (event) => {
+    if (!requireAuth("#audio-editor")) {
+      event.target.value = "";
+      return;
+    }
     const files = Array.from(event.target.files || []);
     const zone = document.querySelector(".audio-upload-zone");
     zone?.classList.add("is-active");
@@ -495,6 +638,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelector(".audio-upload-zone")?.addEventListener("drop", async (event) => {
     event.preventDefault();
+    if (!requireAuth("#audio-editor")) return;
     event.currentTarget.classList.remove("drag-over");
     event.currentTarget.classList.add("is-active");
     const files = Array.from(event.dataTransfer?.files || []);
@@ -507,6 +651,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("audio-file-list")?.addEventListener("click", (event) => {
+    if (!requireAuth("#audio-editor")) return;
     const target = event.target.closest("[data-use-audio]");
     if (!target) return;
     const item = state.audioFiles.find((file) => file.id === target.dataset.useAudio);
@@ -516,6 +661,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("image-input")?.addEventListener("change", async (event) => {
+    if (!requireAuth("#images")) {
+      event.target.value = "";
+      return;
+    }
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
     document.querySelector(".image-upload-zone")?.classList.add("is-active");
@@ -534,11 +683,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.querySelector(".image-upload-zone")?.addEventListener("click", (event) => {
+    if (!requireAuth("#images")) return;
     event.currentTarget.classList.add("is-active");
   });
 
   document.querySelector(".image-upload-zone")?.addEventListener("drop", async (event) => {
     event.preventDefault();
+    if (!requireAuth("#images")) return;
     event.currentTarget.classList.remove("drag-over");
     event.currentTarget.classList.add("is-active");
     const files = Array.from(event.dataTransfer?.files || []);
@@ -549,6 +700,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("image-grid")?.addEventListener("click", (event) => {
+    if (!requireAuth("#images")) return;
     const removeBtn = event.target.closest("[data-remove]");
     if (removeBtn) {
       state.images = state.images.filter((item) => item.id !== removeBtn.dataset.remove);
@@ -570,6 +722,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("compose-video")?.addEventListener("click", async (event) => {
+    if (!requireAuth("#video")) return;
     const pairs = getReadyPairs();
     if (!pairs.length || pairs.length !== buildMediaPairs().length) {
       alert(t("video.pairWarning"));

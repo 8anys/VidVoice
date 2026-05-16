@@ -3,13 +3,17 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 
 from app.core.config import UPLOADS_DIR
+from app.services.auth_service import get_current_user, login_user, public_profile, register_user, update_user_profile
 from app.services.elevenlabs_service import generate_speech, list_voices
 from app.services.generated_files_service import get_output_directory, import_generated_files, list_generated_files, set_output_directory
-from app.services.store import add_project, credits_store, profile_store, projects_store, uploaded_images
+from app.services.project_service import create_project as create_user_project
+from app.services.project_service import delete_project, list_projects, update_project as update_user_project
+from app.services.store import credits_store, uploaded_images
 from app.services.translation_service import translate_text
+from app.services.usage_service import record_audio_generation, record_translation_usage, record_video_generation
 from app.services.video_service import compose_video_file
 
 
@@ -21,25 +25,49 @@ def health():
     return {"status": "ok"}
 
 
+@router.post("/auth/register")
+def register(payload: dict):
+    return register_user(payload)
+
+
+@router.post("/auth/login")
+def login(payload: dict):
+    return login_user(payload)
+
+
+@router.get("/auth/me")
+def me(current_user: dict = Depends(get_current_user)):
+    return public_profile(current_user)
+
+
 @router.get("/profile")
-def get_profile():
-    return profile_store
+def get_profile(current_user: dict = Depends(get_current_user)):
+    return public_profile(current_user)
 
 
 @router.put("/profile")
-def update_profile(payload: dict):
-    profile_store.update(payload)
-    return profile_store
+def update_profile(payload: dict, current_user: dict = Depends(get_current_user)):
+    return update_user_profile(str(current_user["id"]), payload)
 
 
 @router.get("/projects")
-def get_projects():
-    return projects_store
+def get_projects(current_user: dict = Depends(get_current_user)):
+    return list_projects(str(current_user["id"]))
 
 
 @router.post("/projects")
-def create_project(payload: dict):
-    return add_project(payload.get("name", "Untitled Project"), payload.get("language", "EN"), int(payload.get("scenes", 1)))
+def create_project(payload: dict, current_user: dict = Depends(get_current_user)):
+    return create_user_project(str(current_user["id"]), payload)
+
+
+@router.put("/projects/{project_id}")
+def update_project(project_id: str, payload: dict, current_user: dict = Depends(get_current_user)):
+    return update_user_project(str(current_user["id"]), project_id, payload)
+
+
+@router.delete("/projects/{project_id}")
+def remove_project(project_id: str, current_user: dict = Depends(get_current_user)):
+    return delete_project(str(current_user["id"]), project_id)
 
 
 @router.get("/credits")
@@ -48,24 +76,17 @@ def get_credits():
 
 
 @router.post("/translate")
-def translate(payload: dict):
-    return translate_text(payload.get("text", ""), payload.get("direction", "toEN"))
-    text = payload.get("text", "").strip()
-    direction = payload.get("direction", "toEN")
-    if not text:
-        return {"text": ""}
-
-    translated = (
-        "Welcome to VidVoice — transform your text into voice and video in seconds."
-        if direction == "toEN"
-        else "Ласкаво просимо до VidVoice — перетворіть ваш текст на голос та відео за секунди."
-    )
-    return {"text": translated}
+def translate(payload: dict, current_user: dict = Depends(get_current_user)):
+    result = translate_text(payload.get("text", ""), payload.get("direction", "toEN"))
+    record_translation_usage(str(current_user["id"]), payload.get("text", ""))
+    return result
 
 
 @router.post("/generate-audio")
-def generate_audio(payload: dict):
-    return generate_speech(payload)
+def generate_audio(payload: dict, current_user: dict = Depends(get_current_user)):
+    result = generate_speech(payload)
+    record_audio_generation(str(current_user["id"]), result, payload)
+    return result
 
 
 @router.get("/voices")
@@ -112,6 +133,7 @@ async def upload_images(files: list[UploadFile] = File(...)):
 
 
 @router.post("/compose-video")
-def compose_video(payload: dict):
-    return compose_video_file(payload)
-
+def compose_video(payload: dict, current_user: dict = Depends(get_current_user)):
+    result = compose_video_file(payload)
+    record_video_generation(str(current_user["id"]), result, payload)
+    return result

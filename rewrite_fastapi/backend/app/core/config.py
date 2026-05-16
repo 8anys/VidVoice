@@ -11,6 +11,8 @@ AUDIO_DIR = BACKEND_DIR / "storage" / "audio"
 VIDEO_DIR = BACKEND_DIR / "storage" / "videos"
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "").strip()
 ELEVENLABS_BASE_URL = "https://api.elevenlabs.io"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/vidvoice").strip()
+SECRET_KEY = os.getenv("VIDVOICE_SECRET_KEY", "vidvoice-local-development-secret").strip()
 
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 AUDIO_DIR.mkdir(parents=True, exist_ok=True)

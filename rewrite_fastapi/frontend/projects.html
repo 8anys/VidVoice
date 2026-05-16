@@ -4,23 +4,64 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VidVoice - Projects</title>
-    <link rel="stylesheet" href="/assets/css/styles.css?v=theme-2" />
+    <link rel="stylesheet" href="/assets/css/styles.css?v=projects-crud-3" />
   </head>
   <body>
     <div class="simple-shell">
-      <a class="back-link" href="/" data-i18n="common.back">← Back</a>
+      <div class="simple-topbar">
+        <a class="back-link" href="/" data-i18n="common.back">← Back</a>
+        <div class="simple-actions">
+          <button id="site-language-toggle" class="outline-button nav-language-toggle" type="button" data-language-toggle-label>UA</button>
+          <button id="site-theme-toggle" class="nav-theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
+            <span class="theme-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
       <div class="page-title">
         <div class="eyebrow" data-i18n="projects.account">Account</div>
         <h1 data-i18n="projects.title">My Projects</h1>
       </div>
 
       <div class="toolbar">
-        <input id="project-search" class="input" placeholder="Search projects…" style="max-width:28rem;" data-i18n-placeholder="projects.search" />
+        <input id="project-search" class="input" placeholder="Search projects..." style="max-width:28rem;" data-i18n-placeholder="projects.search" />
         <button id="new-project" class="button" type="button" data-i18n="projects.new">+ New Project</button>
       </div>
 
       <div id="projects-list" class="project-list"></div>
     </div>
-    <script type="module" src="/assets/js/projects.js?v=theme-2"></script>
+
+    <div id="project-modal" class="project-modal hidden" role="dialog" aria-modal="true">
+      <div class="project-modal-backdrop" data-project-close></div>
+      <div class="project-modal-card">
+        <button class="auth-modal-close" type="button" data-project-close aria-label="Close">×</button>
+        <div class="eyebrow" id="project-modal-kicker">Project</div>
+        <h2 class="section-title" id="project-modal-title">New project</h2>
+        <div class="auth-modal-form">
+          <input id="project-name-input" class="input" type="text" placeholder="Project name" />
+          <textarea id="project-description-input" class="textarea" placeholder="Description" style="min-height:6rem;"></textarea>
+          <div class="field-row">
+            <select id="project-language-input" class="select">
+              <option value="EN">EN</option>
+              <option value="UA">UA</option>
+            </select>
+            <input id="project-scenes-input" class="input" type="number" min="1" max="100" value="4" />
+          </div>
+          <select id="project-status-input" class="select">
+            <option value="draft">Draft</option>
+            <option value="in_progress">In progress</option>
+            <option value="completed">Completed</option>
+            <option value="failed">Failed</option>
+          </select>
+          <div class="button-row">
+            <button id="project-open-workspace" class="outline-button hidden" type="button">Відкрити робочу область</button>
+            <button id="project-save" class="button" type="button">Зберегти</button>
+          </div>
+          <div id="project-form-message" class="muted"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/assets/js/projects.js?v=projects-crud-3"></script>
   </body>
 </html>
